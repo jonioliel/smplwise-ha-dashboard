@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SmplWise HA Dashboard",
+        "description": "Install the full-screen dashboard and Lovelace card."
+      }
+    },
+    "abort": {"already_configured": "SmplWise HA Dashboard is already configured."}
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dashboard settings",
+        "data": {
+          "default_view": "Default view",
+          "language": "Language",
+          "background_source": "Background source"
+        }
+      }
+    }
+  }
+}
+

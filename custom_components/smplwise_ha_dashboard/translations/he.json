@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SmplWise HA Dashboard",
+        "description": "התקנת לוח המחוונים במסך מלא וכרטיס Lovelace."
+      }
+    },
+    "abort": {"already_configured": "SmplWise HA Dashboard כבר מוגדר."}
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "הגדרות לוח המחוונים",
+        "data": {
+          "default_view": "תצוגת ברירת מחדל",
+          "language": "שפה",
+          "background_source": "מקור תמונת רקע"
+        }
+      }
+    }
+  }
+}
+

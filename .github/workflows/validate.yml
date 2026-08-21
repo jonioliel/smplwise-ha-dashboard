@@ -1,0 +1,39 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Compile Python
+        run: python -m compileall custom_components/smplwise_ha_dashboard
+      - name: Validate frontend syntax
+        run: node --check custom_components/smplwise_ha_dashboard/frontend/smplwise-ha-dashboard.js
+      - name: Validate JSON
+        run: python -m json.tool hacs.json >/dev/null && python -m json.tool custom_components/smplwise_ha_dashboard/manifest.json >/dev/null
+
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hacs/action@main
+        with:
+          category: integration
+          ignore: brands
+
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+
