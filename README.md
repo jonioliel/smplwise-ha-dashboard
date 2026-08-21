@@ -15,6 +15,12 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Selectable SmplWise Dark and image-derived Controlly Glass designs.
 - Automatic Area pictures, manual URLs, or visual background selection from
   the existing Home Assistant Media library.
+- One global fallback background for areas that do not have an Area picture or
+  an explicit background.
+- A single background manager that combines Media selection and manual URLs.
+- A dedicated view for cameras, alarm panels, and other supported entities that
+  are not assigned to a Home Assistant Area.
+- Per-area device-type filters, individual entity visibility, and entity search.
 - Admin-managed dashboard action policies for users, groups, domains, and
   entities.
 - HACS custom integration and manual installation.
@@ -51,7 +57,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.5.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.6.0.js
 ```
 
 Resource type: **JavaScript module**.
@@ -82,6 +88,21 @@ SmplWise delegates live camera playback to Home Assistant. WebRTC therefore
 depends on the camera integration, Home Assistant configuration, network path,
 and browser support. The entity's standard Home Assistant more-info dialog is
 available as a fallback.
+
+Camera and alarm entities do not need an Area assignment. When no Area is set
+on the entity or its device, SmplWise shows it under **Not assigned to an
+area**. Assigning an Area later moves it into that Area after a dashboard reload
+or after selecting **Refresh areas and devices** in the manager.
+
+## Background priority
+
+For each Area, the dashboard uses the first available source in this order:
+
+1. Area image selected from Home Assistant Media.
+2. Manual Area image URL.
+3. Home Assistant Area picture.
+4. Global image selected from Home Assistant Media.
+5. Manual global image URL.
 
 ## Development checks
 

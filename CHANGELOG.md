@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.6.0
+
+- Add an explicit **Exit to HA** action to the full-screen panel header.
+- Add one global fallback background for every area without its own Media,
+  manual URL, or Home Assistant Area picture.
+- Merge manual image URLs and the Home Assistant Media browser into one
+  background manager, including previews, source labels, and reset actions.
+- Preserve unsaved background URL drafts while browsing Home Assistant Media.
+- Show supported entities without an Area in a dedicated **Not assigned to an
+  area** section and view, with alarms and cameras prioritized.
+- Include unassigned entities in whole-home totals and live status metrics.
+- Add per-area device-type filters, per-entity visibility controls, and device
+  search to the manager.
+- Add a manager action to refresh Home Assistant areas, entities, and devices
+  after registry assignments change.
+- Apply hidden-area and device-type settings consistently to whole-home views.
+- Keep area-specific imagery ahead of the global fallback when automatically
+  choosing the featured room.
+- Verify camera streaming, alarm controls, global/area background precedence,
+  filters, search, 390 px scrolling, dropdown stability, and frequent updates.
+
 ## 0.5.0
 
 - Replace the fixed brown Controlly palette with a neutral glass material whose visible tint comes from the selected room image.

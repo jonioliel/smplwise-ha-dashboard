@@ -4,7 +4,7 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.5.0.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.6.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
@@ -14,8 +14,10 @@ DEFAULT_CONFIG = {
     "featured_area_id": None,
     "default_view": "home",
     "background_source": "automatic",
+    "global_background": "",
     "manual_backgrounds": {},
     "media_backgrounds": {},
+    "area_domain_filters": {},
     "area_overrides": {},
     "area_backgrounds": True,
     "hidden_entities": [],
