@@ -14,6 +14,7 @@
         "title": "Dashboard settings",
         "data": {
           "default_view": "Default view",
+          "camera_grid_count": "Default cameras per screen",
           "language": "Language",
           "background_source": "Background source"
         }

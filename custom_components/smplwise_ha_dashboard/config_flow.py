@@ -49,7 +49,11 @@ class SmplWiseDashboardOptionsFlow(config_entries.OptionsFlow):
                 vol.Required(
                     "default_view",
                     default=self.config_entry.options.get("default_view", "home"),
-                ): vol.In(["home", "floor", "area"]),
+                ): vol.In(["home", "floors", "areas", "cameras"]),
+                vol.Required(
+                    "camera_grid_count",
+                    default=self.config_entry.options.get("camera_grid_count", 4),
+                ): vol.In([4, 8, 12, 16]),
                 vol.Required(
                     "language",
                     default=self.config_entry.options.get("language", "auto"),

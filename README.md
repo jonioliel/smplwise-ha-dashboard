@@ -10,8 +10,13 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - English and Hebrew (including RTL).
 - Responsive desktop, tablet, and mobile layouts.
 - Switches, lights, media players, covers, cameras, and alarm panels.
-- Camera live view through Home Assistant's camera stream component. When a
-  camera/integration supports WebRTC, Home Assistant negotiates WebRTC.
+- Live camera cards through Home Assistant's native camera stream component.
+  When a camera/integration supports WebRTC, Home Assistant negotiates WebRTC
+  and falls back to its other supported stream types when required.
+- A dedicated camera center in the desktop sidebar and mobile navigation, with
+  selectable 4, 8, 12, or 16-camera pages.
+- Full-screen camera enlargement with 100–400% zoom, slider/buttons, mouse-wheel
+  zoom, and drag-to-pan on desktop and touch screens.
 - Selectable SmplWise Dark and image-derived Controlly Glass designs.
 - Automatic Area pictures, manual URLs, or visual background selection from
   the existing Home Assistant Media library.
@@ -57,7 +62,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.6.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.7.0.js
 ```
 
 Resource type: **JavaScript module**.
@@ -67,9 +72,12 @@ Then add the card:
 ```yaml
 type: custom:smplwise-ha-dashboard-card
 default_view: home
+camera_grid_count: 4
 ```
 
-Supported values for `default_view` are `home`, `floors`, and `areas`.
+Supported values for `default_view` are `home`, `floors`, `areas`, and
+`cameras`. Supported values for `camera_grid_count` are `4`, `8`, `12`, and
+`16`. Administrators can also set both defaults from the dashboard manager.
 
 ## Permissions
 
@@ -88,6 +96,11 @@ SmplWise delegates live camera playback to Home Assistant. WebRTC therefore
 depends on the camera integration, Home Assistant configuration, network path,
 and browser support. The entity's standard Home Assistant more-info dialog is
 available as a fallback.
+
+The camera center discovers every visible `camera.*` entity, including cameras
+without an Area. The entity state `idle` does not mean that the live view is
+offline; SmplWise shows the stream and reserves an unavailable indication for
+`unavailable` or `unknown` entities.
 
 Camera and alarm entities do not need an Area assignment. When no Area is set
 on the entity or its device, SmplWise shows it under **Not assigned to an

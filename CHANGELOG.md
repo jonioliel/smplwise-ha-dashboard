@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.7.0
+
+- Replace camera `idle` status cards with Home Assistant native live camera
+  streams, preferring WebRTC whenever the camera integration exposes it.
+- Add a dedicated Camera center to the desktop sidebar and mobile navigation.
+- Discover cameras with and without Home Assistant Area assignments.
+- Add selectable 4, 8, 12, and 16-camera layouts with pagination.
+- Add a focused camera viewer with native playback controls, 100–400% zoom,
+  range and button controls, mouse-wheel zoom, and drag-to-pan.
+- Keep active camera streams, camera zoom, and pan position stable while Home
+  Assistant state updates arrive.
+- Add a native Picture Entity fallback for frontend sessions where
+  `ha-camera-stream` has not yet been registered.
+- Add a manager setting and Lovelace option for the default camera count and
+  allow the camera center to be the default view.
+- Verify desktop, 390 px mobile, Hebrew RTL, all four layouts, pagination,
+  stream fallback, persistent scroll, stream-instance stability, and zoom/pan.
+
 ## 0.6.0
 
 - Add an explicit **Exit to HA** action to the full-screen panel header.

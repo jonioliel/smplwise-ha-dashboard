@@ -14,6 +14,7 @@
         "title": "הגדרות לוח המחוונים",
         "data": {
           "default_view": "תצוגת ברירת מחדל",
+          "camera_grid_count": "מספר מצלמות ברירת מחדל במסך",
           "language": "שפה",
           "background_source": "מקור תמונת רקע"
         }
