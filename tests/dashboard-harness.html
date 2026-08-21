@@ -5,9 +5,10 @@ const states={
  "switch.coffee":{entity_id:"switch.coffee",state:"off",attributes:{friendly_name:"Coffee"}},
  "media_player.tv":{entity_id:"media_player.tv",state:"playing",attributes:{friendly_name:"TV",media_title:"Demo"}}
 };
+for(let i=1;i<=28;i++)states[`light.test_${i}`]={entity_id:`light.test_${i}`,state:i%3?"on":"off",attributes:{friendly_name:`Test light ${i}`,brightness:120}};
 const hass={language:"en",states,formatEntityState:s=>s.state,callWS:async msg=>{
- if(msg.type.endsWith("/bootstrap"))return {areas:[{id:"living",name:"Living room",floor_id:"ground",picture:null}],floors:[{id:"ground",name:"Ground",level:0}],config:{language:"en",default_view:"home",background_source:"automatic",manual_backgrounds:{},area_overrides:{},hidden_entities:[],hidden_areas:[],policies:[]},user:{id:"admin",name:"Admin",is_admin:true,groups:[]}};
- if(msg.type==="config/entity_registry/list")return Object.keys(states).map(entity_id=>({entity_id,area_id:"living"}));
+ if(msg.type.endsWith("/bootstrap"))return {areas:[{id:"living",name:"Living room",floor_id:"ground",picture:"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=80"},{id:"kitchen",name:"Kitchen",floor_id:"ground",picture:null},{id:"bedroom",name:"Bedroom",floor_id:"upper",picture:null}],floors:[{id:"ground",name:"Ground",level:0},{id:"upper",name:"Upper",level:1}],config:{language:"en",theme:"controlly",default_view:"home",background_source:"automatic",manual_backgrounds:{},area_overrides:{},hidden_entities:[],hidden_areas:[],policies:[]},user:{id:"admin",name:"Admin",is_admin:true,groups:[]}};
+ if(msg.type==="config/entity_registry/list")return Object.keys(states).map((entity_id,i)=>({entity_id,area_id:i%3===0?"kitchen":i%4===0?"bedroom":"living"}));
  if(msg.type==="config/device_registry/list")return [];
  if(msg.type.endsWith("/admin_context"))return {users:[{id:"u1",name:"User",is_admin:false}],groups:[{id:"g1",name:"Users"}]};
  if(msg.type.endsWith("/save_config"))return msg.config;

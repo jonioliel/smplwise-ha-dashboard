@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0
+
+- Rebuild the Controlly home view around a large featured-room image, live home status, horizontal room navigation, filters, and device controls.
+- Fix full-screen mobile scrolling by making the dashboard surface the explicit vertical scroll container.
+- Add momentum scrolling and overscroll containment for touch devices.
+- Add responsive layouts for 360 px, 390 px, 720 px, 900 px, and desktop widths.
+- Prevent horizontal overflow on narrow phones while keeping the bottom navigation fixed.
+- Expand the browser QA harness to 31 devices, three rooms, two floors, users, groups, room pictures, and long management screens.
+
 ## 0.3.0
 
 - Add the optional Controlly Glass dashboard design.
