@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import voluptuous as vol
@@ -12,6 +13,8 @@ from homeassistant.helpers import area_registry as ar, floor_registry as fr
 
 from .const import DOMAIN
 from .store import DashboardStore
+
+_LOGGER = logging.getLogger(__name__)
 
 ALLOWED_SERVICES = {
     "alarm_control_panel": {"alarm_arm_home", "alarm_arm_away", "alarm_disarm"},
@@ -137,41 +140,52 @@ def async_register_commands(hass: HomeAssistant, store: DashboardStore) -> None:
         connection: websocket_api.ActiveConnection,
         msg: dict[str, Any],
     ) -> None:
-        entity_id = msg["entity_id"]
-        entity_domain = entity_id.partition(".")[0]
-        requested_domain = msg["domain"]
-        requested_service = msg["service"]
-        valid_toggle = (
-            requested_domain == "homeassistant"
-            and requested_service == "toggle"
-            and entity_domain in {"light", "switch"}
-        )
-        valid_domain_service = (
-            requested_domain == entity_domain
-            and requested_service in ALLOWED_SERVICES.get(entity_domain, set())
-        )
-        if not (valid_toggle or valid_domain_service):
-            connection.send_error(
-                msg["id"], "invalid_action", "Action is not allowed by the dashboard API"
-            )
-            return
-        if not store.can_control(
-            connection.user.id,
-            _groups(connection),
-            entity_id,
-            entity_domain,
-            connection.user.is_admin,
-        ):
-            connection.send_error(
-                msg["id"], "not_allowed", "Dashboard policy denied this action"
-            )
-            return
-        data = {**msg["service_data"], "entity_id": entity_id}
         try:
+            entity_id = msg["entity_id"]
+            entity_domain = entity_id.partition(".")[0]
+            requested_domain = msg["domain"]
+            requested_service = msg["service"]
+            valid_toggle = (
+                requested_domain == "homeassistant"
+                and requested_service == "toggle"
+                and entity_domain in {"light", "switch"}
+            )
+            valid_domain_service = (
+                requested_domain == entity_domain
+                and requested_service
+                in ALLOWED_SERVICES.get(entity_domain, set())
+            )
+            if not (valid_toggle or valid_domain_service):
+                connection.send_error(
+                    msg["id"],
+                    "invalid_action",
+                    "Action is not allowed by the dashboard API",
+                )
+                return
+            if not store.can_control(
+                connection.user.id,
+                _groups(connection),
+                entity_id,
+                entity_domain,
+                connection.user.is_admin,
+            ):
+                connection.send_error(
+                    msg["id"],
+                    "not_allowed",
+                    "Dashboard policy denied this action",
+                )
+                return
+            data = {**msg["service_data"], "entity_id": entity_id}
             await hass.services.async_call(
                 requested_domain, requested_service, data, blocking=True
             )
-        except Exception as err:  # Home Assistant returns the safe error to the UI.
+        except Exception as err:  # Defensive boundary for all custom API failures.
+            _LOGGER.exception(
+                "Dashboard command failed: %s.%s for %s",
+                msg.get("domain"),
+                msg.get("service"),
+                msg.get("entity_id"),
+            )
             connection.send_error(msg["id"], "service_error", str(err))
             return
         connection.send_result(msg["id"], {"success": True})
