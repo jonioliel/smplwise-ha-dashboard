@@ -1,0 +1,17 @@
+<!doctype html><html><body style="margin:0"><smplwise-ha-dashboard-panel></smplwise-ha-dashboard-panel><script type="module">
+import "../custom_components/smplwise_ha_dashboard/frontend/smplwise-ha-dashboard.js";
+const states={
+ "light.living":{entity_id:"light.living",state:"on",attributes:{friendly_name:"Living light",brightness:128}},
+ "switch.coffee":{entity_id:"switch.coffee",state:"off",attributes:{friendly_name:"Coffee"}},
+ "media_player.tv":{entity_id:"media_player.tv",state:"playing",attributes:{friendly_name:"TV",media_title:"Demo"}}
+};
+const hass={language:"en",states,formatEntityState:s=>s.state,callWS:async msg=>{
+ if(msg.type.endsWith("/bootstrap"))return {areas:[{id:"living",name:"Living room",floor_id:"ground",picture:null}],floors:[{id:"ground",name:"Ground",level:0}],config:{language:"en",default_view:"home",background_source:"automatic",manual_backgrounds:{},area_overrides:{},hidden_entities:[],hidden_areas:[],policies:[]},user:{id:"admin",name:"Admin",is_admin:true,groups:[]}};
+ if(msg.type==="config/entity_registry/list")return Object.keys(states).map(entity_id=>({entity_id,area_id:"living"}));
+ if(msg.type==="config/device_registry/list")return [];
+ if(msg.type.endsWith("/admin_context"))return {users:[{id:"u1",name:"User",is_admin:false}],groups:[{id:"g1",name:"Users"}]};
+ if(msg.type.endsWith("/save_config"))return msg.config;
+ if(msg.type.endsWith("/execute"))return {success:true};
+ }};
+const panel=document.querySelector("smplwise-ha-dashboard-panel");panel.panel={};panel.hass=hass;
+</script></body></html>

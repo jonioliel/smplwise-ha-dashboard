@@ -94,20 +94,33 @@ def async_register_commands(hass: HomeAssistant, store: DashboardStore) -> None:
         connection: websocket_api.ActiveConnection,
         msg: dict[str, Any],
     ) -> None:
-        users = await hass.auth.async_get_users()
-        groups = await hass.auth.async_get_groups()
-        connection.send_result(
-            msg["id"],
-            {
-                "users": [
-                    {"id": user.id, "name": user.name, "is_admin": user.is_admin}
-                    for user in users
-                ],
-                "groups": [
-                    {"id": group.id, "name": group.name} for group in groups
-                ],
-            },
-        )
+        try:
+            users = await hass.auth.async_get_users()
+            groups_by_id = {
+                group.id: group
+                for user in users
+                for group in user.groups
+            }
+            connection.send_result(
+                msg["id"],
+                {
+                    "users": [
+                        {
+                            "id": user.id,
+                            "name": user.name,
+                            "is_admin": user.is_admin,
+                        }
+                        for user in users
+                    ],
+                    "groups": [
+                        {"id": group.id, "name": group.name}
+                        for group in groups_by_id.values()
+                    ],
+                },
+            )
+        except Exception as err:
+            _LOGGER.exception("Failed to load dashboard users and groups")
+            connection.send_error(msg["id"], "admin_context_error", str(err))
 
     @websocket_api.websocket_command(
         {
