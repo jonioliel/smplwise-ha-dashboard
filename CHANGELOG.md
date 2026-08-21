@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.0
+
+- Replace the fixed brown Controlly palette with a neutral glass material whose visible tint comes from the selected room image.
+- Use the featured-room image across the complete Controlly dashboard background with a subtle readability overlay.
+- Add neutral translucent surfaces, backdrop blur, saturation, fine light borders, inner highlights, and near-white active cards.
+- Add a visual Home Assistant Media browser for room backgrounds.
+- Browse folders through `media_source/browse_media`, filter to images, show thumbnails, and support back navigation.
+- Store stable `media-source://` identifiers and resolve signed image URLs again whenever the dashboard loads.
+- Add per-room previews and a clear-background action in dashboard management.
+- Verify the media picker at 390 px with no horizontal overflow and during frequent Home Assistant updates.
+
 ## 0.4.1
 
 - Stop rebuilding the complete dashboard DOM for every Home Assistant update.

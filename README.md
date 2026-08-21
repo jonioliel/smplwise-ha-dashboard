@@ -3,7 +3,7 @@
 A responsive, automatically generated whole-home dashboard for Home Assistant.
 It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 
-## Version 0.1 MVP
+## Current capabilities
 
 - Automatic hierarchy: whole home → floor → area → entity.
 - Live Home Assistant state updates.
@@ -12,7 +12,9 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Switches, lights, media players, covers, cameras, and alarm panels.
 - Camera live view through Home Assistant's camera stream component. When a
   camera/integration supports WebRTC, Home Assistant negotiates WebRTC.
-- Automatic Area pictures with configurable Area/manual background modes.
+- Selectable SmplWise Dark and image-derived Controlly Glass designs.
+- Automatic Area pictures, manual URLs, or visual background selection from
+  the existing Home Assistant Media library.
 - Admin-managed dashboard action policies for users, groups, domains, and
   entities.
 - HACS custom integration and manual installation.
@@ -49,7 +51,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.4.1.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.5.0.js
 ```
 
 Resource type: **JavaScript module**.
