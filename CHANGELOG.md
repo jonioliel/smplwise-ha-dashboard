@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1
+
+- Declare Home Assistant's HTTP component dependency so the integration passes
+  hassfest dependency validation.
+- Update the validation workflow runtime and keep GitHub-side repository
+  description/topic metadata outside source-package validation.
+
 ## 0.7.0
 
 - Replace camera `idle` status cards with Home Assistant native live camera
