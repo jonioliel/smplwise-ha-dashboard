@@ -49,7 +49,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.2.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.3.0.js
 ```
 
 Resource type: **JavaScript module**.

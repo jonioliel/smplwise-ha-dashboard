@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0
+
+- Add the optional Controlly Glass dashboard design.
+- Keep SmplWise Dark as the default and allow administrators to switch designs.
+- Add responsive glass surfaces, warm layered backgrounds, active-device contrast, and a mobile-specific Controlly layout.
+- Version the frontend URL again so Home Assistant and browsers cannot reuse the previous cached bundle.
+
 ## 0.2.0
 
 - Fix domain filters whose cards remained visible because component CSS overrode the `hidden` attribute.
