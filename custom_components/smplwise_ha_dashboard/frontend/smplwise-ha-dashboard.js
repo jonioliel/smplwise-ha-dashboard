@@ -15,16 +15,45 @@ class SmplWiseDashboard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({mode:"open"});
-    this._boot = null; this._entityRegistry=[]; this._deviceRegistry=[]; this._view="home"; this._selectedFloor=null; this._selectedArea=null; this._detail=null; this._filter="all"; this._busy=false; this._toast=""; this._immersive=true; this._pending=new Set();
+    this._boot = null; this._entityRegistry=[]; this._deviceRegistry=[]; this._view="home"; this._selectedFloor=null; this._selectedArea=null; this._detail=null; this._filter="all"; this._busy=false; this._toast=""; this._immersive=true; this._pending=new Set();this._lastStateSignature="";
+    this.shadowRoot.addEventListener("pointerdown",()=>{this._interactionUntil=Date.now()+500});
     this.shadowRoot.addEventListener("click", event=>this._handleClick(event));
     this.shadowRoot.addEventListener("change", event=>this._handleChange(event));
   }
-  set hass(value) { const first=!this._hass; this._hass=value; if(first) this._initialize(); else this._render(); }
+  set hass(value) { const first=!this._hass,signature=this._stateSignature(value);this._hass=value;if(first){this._lastStateSignature=signature;this._initialize()}else if(signature!==this._lastStateSignature){this._lastStateSignature=signature;this._scheduleStateRender()} }
   get hass(){ return this._hass; }
-  set panel(value){ this._panel=value; if(this._boot)this._render(); }
+  set panel(value){ const changed=Boolean(this._panel)!==Boolean(value);this._panel=value;if(this._boot&&changed)this._render(); }
   setConfig(config){ this._cardConfig=config||{}; this._view=config?.default_view||"home"; }
   getCardSize(){ return 12; }
   static getStubConfig(){ return {default_view:"home"}; }
+
+  _stateSignature(hass){return Object.values(hass?.states||{}).filter(s=>SUPPORTED.has(domainOf(s.entity_id))).map(s=>{const a=s.attributes||{};return [s.entity_id,s.state,a.brightness,a.current_position,a.volume_level,a.is_volume_muted,a.media_title,a.source].join("|")}).sort().join(";")}
+
+  _scheduleStateRender(){
+    if(!this._boot||this._view==="settings"||this.shadowRoot.activeElement?.matches("select,input,textarea"))return;
+    if(Date.now()<(this._interactionUntil||0)){if(!this._interactionTimer)this._interactionTimer=setTimeout(()=>{this._interactionTimer=null;this._scheduleStateRender()},Math.max(0,this._interactionUntil-Date.now()));return}
+    if(this._stateRenderQueued)return;
+    this._stateRenderQueued=true;
+    requestAnimationFrame(()=>{
+      this._stateRenderQueued=false;
+      this._patchLiveState();
+    });
+  }
+
+  _patchLiveState(){
+    this.shadowRoot.querySelectorAll("[data-entity-card]").forEach(card=>{
+      const entityId=card.dataset.entityCard,state=this._hass.states[entityId];if(!state)return;
+      card.classList.toggle("on",isOn(state.state));card.classList.toggle("pending",this._pending.has(entityId));
+      const label=card.querySelector("small");if(label)label.textContent=this._stateLabel(state);
+      const quick=card.querySelector("[data-quick]");if(quick)quick.textContent=isOn(state.state)?this._t("off"):this._t("on");
+    });
+    const assigned=this._stateEntries().filter(s=>this._areaId(s));
+    const metrics={lights:assigned.filter(s=>domainOf(s.entity_id)==="light"&&isOn(s.state)).length,covers:assigned.filter(s=>domainOf(s.entity_id)==="cover"&&isOn(s.state)).length,media:assigned.filter(s=>domainOf(s.entity_id)==="media_player"&&s.state==="playing").length,unavailable:assigned.filter(s=>s.state==="unavailable").length};
+    const metricValues=[metrics.lights,metrics.covers,metrics.media,metrics.unavailable];this.shadowRoot.querySelectorAll(".clyMetric b").forEach((target,index)=>{if(metricValues[index]!==undefined)target.textContent=String(metricValues[index])});
+    const summary=this.shadowRoot.querySelector(".clyDevicesHead p");if(summary)summary.textContent=`${assigned.filter(s=>isOn(s.state)).length} ${this._t("active")} · ${assigned.length} ${this._t("entities")}`;
+  }
+
+  _renderKeepingScroll(){const old=this.shadowRoot.querySelector(".app")?.scrollTop||0;this._render();const app=this.shadowRoot.querySelector(".app");if(app)app.scrollTop=old}
 
   async _initialize(){
     if(!this._hass || this._busy) return;
@@ -83,7 +112,7 @@ class SmplWiseDashboard extends HTMLElement {
     </div>`;
     if(this._detail&&domainOf(this._detail.entity_id)==="camera")this._mountCamera(this._detail);
   }
-  _themeSettingHtml(){const theme=this._boot.config.theme||"smplwise";return `<section class="panel" style="margin-bottom:12px"><h2>Design · עיצוב</h2><div class="field"><label>Dashboard style</label><select id="cfgTheme"><option value="smplwise" ${theme==='smplwise'?'selected':''}>SmplWise Dark</option><option value="controlly" ${theme==='controlly'?'selected':''}>Controlly Glass</option></select></div><button class="save" id="saveTheme">${this._t("save")}</button></section>`}
+  _themeSettingHtml(){const c=this._boot.config,theme=c.theme||"smplwise";return `<section class="panel" style="margin-bottom:12px"><h2>Design · עיצוב</h2><div class="field"><label>Dashboard style</label><select id="cfgTheme"><option value="smplwise" ${theme==='smplwise'?'selected':''}>SmplWise Dark</option><option value="controlly" ${theme==='controlly'?'selected':''}>Controlly Glass</option></select></div><div class="field"><label>Featured room · חדר ראשי</label><select id="cfgFeaturedArea"><option value="">Automatic · אוטומטי</option>${(this._boot.areas||[]).map(area=>`<option value="${esc(area.id)}" ${c.featured_area_id===area.id?'selected':''}>${esc(this._areaName(area))}</option>`).join("")}</select></div><button class="save" id="saveTheme">${this._t("save")}</button></section>`}
   _navHtml(){return [["home","⌂",this._t("home")],["floors","▱",this._t("floors")],["areas","▦",this._t("areas")]].map(([v,i,n])=>`<button class="navBtn ${this._view===v?'active':''}" data-view="${v}"><span>${i}</span>${n}</button>`).join("")+ (this._boot.user.is_admin?`<button class="navBtn ${this._view==='settings'?'active':''}" data-view="settings"><span>⚙</span>${this._t("settings")}</button>`:"")}
   _floorNavHtml(){return (this._boot.floors||[]).map(f=>`<button class="navBtn" data-floor="${esc(f.id)}">${esc(f.name)}<span>${this._floorAreas(f.id).length}</span></button>`).join("")}
   _contentHtml(all,active){
@@ -98,7 +127,8 @@ class SmplWiseDashboard extends HTMLElement {
   }
   _controllyHomeHtml(all,active){
     const areas=(this._boot.areas||[]).filter(a=>!this._boot.config.hidden_areas?.includes(a.id));
-    const featured=areas.find(a=>this._areaEntities(a.id).length)||areas[0];
+    const configured=areas.find(a=>a.id===this._boot.config.featured_area_id);
+    const featured=configured||[...areas].sort((a,b)=>Number(Boolean(this._background(b)))-Number(Boolean(this._background(a)))||this._areaEntities(b.id).length-this._areaEntities(a.id).length||this._areaName(a).localeCompare(this._areaName(b),this._lang()))[0];
     const assigned=all.filter(s=>this._areaId(s));
     const featuredEntities=featured?this._areaEntities(featured.id):[];
     const background=this._background(featured);
@@ -141,7 +171,7 @@ class SmplWiseDashboard extends HTMLElement {
   }
   _handleChange(event){const el=event.target.closest("[data-range]");if(el&&this._detail)this._rangeAction(this._detail,el.dataset.range,Number(el.value))}
   _applyFilter(filter){this._filter=filter;this._render()}
-  async _execute(domain,service,entity_id,service_data={}){this._pending.add(entity_id);this._render();try{await this._hass.callWS({type:`${DOMAIN}/execute`,domain,service,entity_id,service_data});this._toast=this._t("saved")}catch(err){this._toast=err?.message||err?.code||this._t("denied")}finally{this._pending.delete(entity_id);setTimeout(()=>{this._toast="";this._render()},1800)}if(this._detail?.entity_id===entity_id)this._detail=this._hass.states[entity_id];this._render()}
+  async _execute(domain,service,entity_id,service_data={}){this._pending.add(entity_id);this._renderKeepingScroll();try{await this._hass.callWS({type:`${DOMAIN}/execute`,domain,service,entity_id,service_data});this._toast=this._t("saved")}catch(err){this._toast=err?.message||err?.code||this._t("denied")}finally{this._pending.delete(entity_id);setTimeout(()=>{this._toast="";this._renderKeepingScroll()},1800)}if(this._detail?.entity_id===entity_id)this._detail=this._hass.states[entity_id];this._renderKeepingScroll()}
   _action(s,service){const d=domainOf(s.entity_id);if(service==="toggle")return this._execute("homeassistant","toggle",s.entity_id);if(service==="volume_mute")return this._execute(d,service,s.entity_id,{is_volume_muted:!s.attributes.is_volume_muted});return this._execute(d,service,s.entity_id)}
   _rangeAction(s,type,value){const d=domainOf(s.entity_id);if(type==="brightness")return this._execute(d,"turn_on",s.entity_id,{brightness_pct:value});if(type==="position")return this._execute(d,"set_cover_position",s.entity_id,{position:value});if(type==="volume")return this._execute(d,"volume_set",s.entity_id,{volume_level:value/100})}
   _moreInfo(entityId){if(!entityId)return;this.dispatchEvent(new CustomEvent("hass-more-info",{bubbles:true,composed:true,detail:{entityId}}))}
@@ -149,7 +179,7 @@ class SmplWiseDashboard extends HTMLElement {
   async _loadAdmin(){try{this._admin=await this._hass.callWS({type:`${DOMAIN}/admin_context`})}catch(err){this._toast=err?.message||String(err)}this._render()}
   async _addPolicy(){const raw=this.shadowRoot.querySelector("#policySubject").value,[kind,id]=raw.split(":"),domain=this.shadowRoot.querySelector("#policyDomain").value,effect=this.shadowRoot.querySelector("#policyEffect").value;const policy={effect,subjects:{users:kind==="user"?[id]:[],groups:kind==="group"?[id]:[]},resources:{domains:[domain],entities:[],all:false}};this._boot.config.policies=[...(this._boot.config.policies||[]),policy];await this._persistConfig()}
   async _removePolicy(index){this._boot.config.policies=(this._boot.config.policies||[]).filter((_,i)=>i!==index);await this._persistConfig()}
-  async _saveTheme(){this._boot.config={...this._boot.config,theme:this.shadowRoot.querySelector("#cfgTheme").value};await this._persistConfig()}
+  async _saveTheme(){this._boot.config={...this._boot.config,theme:this.shadowRoot.querySelector("#cfgTheme").value,featured_area_id:this.shadowRoot.querySelector("#cfgFeaturedArea").value||null};await this._persistConfig()}
   async _saveAreas(){const overrides={},backgrounds={},hidden=[];for(const area of this._boot.areas||[]){const name=this.shadowRoot.querySelector(`[data-area-name="${CSS.escape(area.id)}"]`)?.value?.trim();const background=this.shadowRoot.querySelector(`[data-area-background="${CSS.escape(area.id)}"]`)?.value?.trim();if(name&&name!==area.name)overrides[area.id]={name};if(background)backgrounds[area.id]=background;if(this.shadowRoot.querySelector(`[data-area-hidden="${CSS.escape(area.id)}"]`)?.checked)hidden.push(area.id)}this._boot.config={...this._boot.config,area_overrides:overrides,manual_backgrounds:backgrounds,hidden_areas:hidden};await this._persistConfig()}
   async _persistConfig(){try{this._boot.config=await this._hass.callWS({type:`${DOMAIN}/save_config`,config:this._boot.config});this._toast=this._t("saved")}catch(err){this._toast=err?.message||String(err)}setTimeout(()=>{this._toast="";this._render()},1600);this._render()}
   async _saveConfig(){const config={...this._boot.config,default_view:this.shadowRoot.querySelector("#cfgView").value,language:this.shadowRoot.querySelector("#cfgLang").value,background_source:this.shadowRoot.querySelector("#cfgBg").value};try{this._boot.config=await this._hass.callWS({type:`${DOMAIN}/save_config`,config});this._toast=this._t("saved")}catch(err){this._toast=err?.message||String(err)}setTimeout(()=>{this._toast="";this._render()},1800);this._render()}

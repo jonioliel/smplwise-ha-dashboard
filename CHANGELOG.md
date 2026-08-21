@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.1
+
+- Stop rebuilding the complete dashboard DOM for every Home Assistant update.
+- Patch live device states and Controlly metrics in place so scrolling, focus, and open controls remain stable.
+- Ignore identical and unsupported-domain state updates by using a relevant-state signature.
+- Keep the settings DOM untouched while a user edits an input or dropdown.
+- Preserve scroll position during direct device commands and delayed command feedback.
+- Add an administrator-selectable featured room.
+- Choose the automatic featured room by room picture, device count, and stable alphabetical order instead of registry order.
+- Add stress tests with identical updates every 50 ms and relevant light changes every 250 ms.
+
 ## 0.4.0
 
 - Rebuild the Controlly home view around a large featured-room image, live home status, horizontal room navigation, filters, and device controls.

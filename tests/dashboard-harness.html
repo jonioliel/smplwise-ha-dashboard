@@ -15,4 +15,6 @@ const hass={language:"en",states,formatEntityState:s=>s.state,callWS:async msg=>
  if(msg.type.endsWith("/execute"))return {success:true};
  }};
 const panel=document.querySelector("smplwise-ha-dashboard-panel");panel.panel={};panel.hass=hass;
+if(location.search.includes("updates=1"))setInterval(()=>{panel.hass={...hass,states:{...states}}},50);
+if(location.search.includes("changes=1"))setInterval(()=>{const old=states["light.living"];states["light.living"]={...old,state:old.state==="on"?"off":"on"};panel.hass={...hass,states:{...states}}},250);
 </script></body></html>
