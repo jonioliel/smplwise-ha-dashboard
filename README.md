@@ -11,8 +11,16 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Responsive desktop, tablet, and mobile layouts.
 - Switches, lights, climate/HVAC entities, media players, covers, cameras, and
   alarm panels.
-- Dynamic category sections on the whole-home and Area views. Empty room
-  categories are omitted, while the home view focuses on devices active now.
+- A whole-home information surface centered on local date/time, with optional
+  current weather plus weekly Torah portion, candle-lighting, and Havdalah
+  values read from Home Assistant entities.
+- Floor-grouped room navigation with live active/inactive indicators. An
+  administrator can exclude individual entities from the Area activity result.
+- One continuous horizontal device rail on the home view. It can switch between
+  **Active** and **All**, and continues from one editable category to the next
+  without building a long vertical device page.
+- Dynamic category sections in every Area. Empty room categories and filters
+  are omitted automatically.
 - Capability-aware HVAC controls for target temperature or temperature range,
   HVAC mode, fan mode, target humidity, preset, vertical swing, and horizontal
   swing when each option is exposed by the climate entity.
@@ -29,13 +37,22 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - One global fallback background for areas that do not have an Area picture or
   an explicit background.
 - A single background manager that combines Media selection and manual URLs.
-- A dedicated view for cameras, alarm panels, and other supported entities that
-  are not assigned to a Home Assistant Area.
+- A dedicated administrator screen for supported entities without a Home
+  Assistant Area. Administrators can select several entities and assign all of
+  them to one Area in the native Home Assistant Entity Registry.
 - Per-area device-type filters, individual entity visibility, and entity search.
 - Per-entity dashboard name and display-category overrides, including showing a
   switch under Lighting while preserving its native switch actions.
 - Multi-Area dashboard membership: one Home Assistant entity can be displayed
   in several rooms without changing or duplicating the native entity.
+- A categorized manager instead of one long settings page: appearance, home
+  information, rooms, categories, entities, backgrounds, filters, permissions,
+  and native unassigned entities.
+- Administrator controls for text/icon scale, rectangular/square/circular
+  device cards, category names and order, and per-category turn-on/turn-off
+  action labels.
+- Rich Area headers with optional room image, temperature, humidity, live
+  summary, and configurable top/bottom control placement.
 - Admin-managed dashboard action policies for users, groups, domains, and
   entities.
 - HACS custom integration and manual installation.
@@ -72,7 +89,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.8.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.9.0.js
 ```
 
 Resource type: **JavaScript module**.
@@ -102,15 +119,21 @@ there. Native Home Assistant authorization remains authoritative.
 
 ## Entity display and multi-Area membership
 
-Administrators can use **Manage → Edit devices and room membership** to change
+Administrators can use **Manage → Devices** to change
 the dashboard name and display category of each supported entity, or select any
 number of Areas in which it should appear. Selecting no Area places it in the
-dashboard's unassigned view. The Reset action restores the Home Assistant name,
-native domain category, and native Area assignment.
+manager's unassigned state. The Reset action restores the Home Assistant name,
+native domain category, native Area assignment, and activity behavior.
 
 These overrides affect only SmplWise HA Dashboard. Service calls always use the
 entity's real Home Assistant domain, and the Home Assistant entity/device
 registry is not modified.
+
+The separate **Manage → No Area** screen is intentionally different: its batch
+assignment action changes the selected entities' native `area_id` in Home
+Assistant. It is administrator-only, requires an explicit confirmation in the
+UI, and assigns every selected entity to the single chosen native Area. Extra
+SmplWise multi-Area membership can still be added afterward from **Devices**.
 
 ## Camera and WebRTC
 
@@ -124,10 +147,10 @@ without an Area. The entity state `idle` does not mean that the live view is
 offline; SmplWise shows the stream and reserves an unavailable indication for
 `unavailable` or `unknown` entities.
 
-Camera and alarm entities do not need an Area assignment. When no Area is set
-on the entity or its device, SmplWise shows it under **Not assigned to an
-area**. Assigning an Area later moves it into that Area after a dashboard reload
-or after selecting **Refresh areas and devices** in the manager.
+Camera and alarm entities do not need an Area assignment to appear in the
+camera center or to remain manageable. Unassigned entities are deliberately
+excluded from the whole-home device rail and appear in **Manage → No Area**,
+where they can be assigned natively in bulk.
 
 ## Background priority
 
@@ -139,6 +162,16 @@ For each Area, the dashboard uses the first available source in this order:
 4. Global image selected from Home Assistant Media.
 5. Manual global image URL.
 
+## Home information entities
+
+Date and time are rendered locally and are always available. Weather is read
+from a `weather.*` entity. Weekly portion and Shabbat times are read from sensor
+entities, including the standard Jewish Calendar integration's
+`parshat_hashavua`, candle-lighting, and Havdalah sensors. SmplWise can detect
+the common entity IDs automatically, or an administrator can select an explicit
+entity in **Manage → Home screen**. ISO 8601 timestamp sensor values are shown in
+the Home Assistant/browser local time zone.
+
 ## Development checks
 
 ```bash
@@ -149,9 +182,11 @@ node --check custom_components/smplwise_ha_dashboard/frontend/smplwise-ha-dashbo
 ## Security
 
 The custom WebSocket action endpoint uses a strict service allowlist and applies
-dashboard policies before calling Home Assistant services. Sensitive alarm and
-lock workflows will receive additional confirmation/code handling before the
-first stable release.
+dashboard policies before calling Home Assistant services. The batch Area
+assignment endpoint is administrator-only, validates the target Area, and
+updates only registered entity `area_id` values. Sensitive alarm and lock
+workflows will receive additional confirmation/code handling before the first
+stable release.
 
 ## License
 

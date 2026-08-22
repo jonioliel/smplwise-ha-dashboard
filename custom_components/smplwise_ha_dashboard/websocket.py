@@ -9,7 +9,11 @@ import voluptuous as vol
 
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import area_registry as ar, floor_registry as fr
+from homeassistant.helpers import (
+    area_registry as ar,
+    entity_registry as er,
+    floor_registry as fr,
+)
 
 from .const import DOMAIN
 from .store import DashboardStore
@@ -151,6 +155,40 @@ def async_register_commands(hass: HomeAssistant, store: DashboardStore) -> None:
 
     @websocket_api.websocket_command(
         {
+            vol.Required("type"): f"{DOMAIN}/assign_entities_area",
+            vol.Required("entity_ids"): vol.All([str], vol.Length(min=1)),
+            vol.Required("area_id"): str,
+        }
+    )
+    @websocket_api.require_admin
+    @websocket_api.async_response
+    async def assign_entities_area(
+        hass: HomeAssistant,
+        connection: websocket_api.ActiveConnection,
+        msg: dict[str, Any],
+    ) -> None:
+        """Assign several registered entities to one Home Assistant Area."""
+        area_registry = ar.async_get(hass)
+        if area_registry.async_get_area(msg["area_id"]) is None:
+            connection.send_error(msg["id"], "area_not_found", "Area not found")
+            return
+
+        entity_registry = er.async_get(hass)
+        updated: list[str] = []
+        skipped: list[str] = []
+        for entity_id in dict.fromkeys(msg["entity_ids"]):
+            if entity_registry.async_get(entity_id) is None:
+                skipped.append(entity_id)
+                continue
+            entity_registry.async_update_entity(entity_id, area_id=msg["area_id"])
+            updated.append(entity_id)
+
+        connection.send_result(
+            msg["id"], {"updated": updated, "skipped": skipped}
+        )
+
+    @websocket_api.websocket_command(
+        {
             vol.Required("type"): f"{DOMAIN}/execute",
             vol.Required("domain"): str,
             vol.Required("service"): str,
@@ -217,5 +255,6 @@ def async_register_commands(hass: HomeAssistant, store: DashboardStore) -> None:
     websocket_api.async_register_command(hass, bootstrap)
     websocket_api.async_register_command(hass, admin_context)
     websocket_api.async_register_command(hass, save_config)
+    websocket_api.async_register_command(hass, assign_entities_area)
     websocket_api.async_register_command(hass, execute)
 

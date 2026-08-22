@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.9.0
+
+- Replace the featured-room home hero with a neutral date/time surface so an
+  arbitrary Area can no longer become the main whole-home content.
+- Add optional Home Assistant weather, weekly Torah portion, candle-lighting,
+  and Havdalah entity data with automatic entity detection and administrator
+  selectors.
+- Group room navigation by floor, sort floors by level, and show live
+  active/inactive status in the desktop sidebar and home room rail.
+- Add a per-entity option that excludes a device from its Area activity result.
+- Exclude entities without a native Home Assistant Area from the whole-home
+  device surface.
+- Add an administrator-only **No Area** manager with search, multi-selection,
+  confirmation, and native Entity Registry `area_id` batch updates.
+- Replace vertically stacked home categories with one horizontal, touch-ready
+  device rail that continues across categories and switches between **Active**
+  and **All** without changing page scroll position.
+- Add configurable category order, Hebrew/English category names, and
+  per-language action labels. Correct Hebrew actions to **הדלקה** and **כיבוי**.
+- Add rectangular, square, and circular entity layouts plus global text and icon
+  scale controls.
+- Replace fragile Unicode navigation and domain symbols with a consistent inline
+  SVG icon set and correct full RTL alignment of the Hebrew sidebar.
+- Split management into nine focused sections instead of one long page.
+- Add rich Area headers with configurable image, temperature, general
+  information, and top/bottom control placement. Area filter buttons now include
+  only categories that actually exist in that room.
+- Extend the local browser harness with weather and Jewish Calendar sensors,
+  Area temperature/humidity, native unassigned entities, and a simulated native
+  registry assignment endpoint.
+- Verify desktop and 390 px mobile layouts, RTL alignment, horizontal-only device
+  scrolling, state-update scroll stability, dropdown stability, settings
+  persistence, activity exclusions, native batch assignment, room display
+  options, category customization, HVAC payloads, and WebRTC camera zoom.
+
 ## 0.8.0
 
 - Reorganize whole-home active devices into clear category sections such as
