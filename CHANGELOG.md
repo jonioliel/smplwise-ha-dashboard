@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.8.0
+
+- Reorganize whole-home active devices into clear category sections such as
+  **Lights on now**, **Climate active now**, and **Covers open now**.
+- Group every Area dynamically by the categories that actually contain devices;
+  rooms without climate, covers, media, or other categories do not show empty
+  headings.
+- Add Home Assistant `climate` discovery and capability-aware HVAC controls for
+  modes, target temperature/range, fan, humidity, presets, and both swing axes.
+- Add climate services to the permission-checked backend action allowlist.
+- Add a searchable entity editor for dashboard names and display categories,
+  including presenting a switch as a light without changing its native action.
+- Add dashboard-only multi-Area membership so one entity can appear in several
+  rooms, be moved to another room, or be intentionally left unassigned.
+- Keep legacy Area filters compatible so upgrading cannot silently hide newly
+  supported climate entities before the administrator saves new filter choices.
+- Deduplicate entity totals on floors when an entity belongs to multiple Areas.
+- Extend the browser harness with advanced and basic climate entities and verify
+  desktop, 390 px mobile, Hebrew RTL, scroll stability, dropdown stability,
+  category omission, HVAC service payloads, override persistence, and
+  multi-room rendering.
+
 ## 0.7.1
 
 - Declare Home Assistant's HTTP component dependency so the integration passes

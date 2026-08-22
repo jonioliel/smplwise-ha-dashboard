@@ -18,6 +18,17 @@ _LOGGER = logging.getLogger(__name__)
 
 ALLOWED_SERVICES = {
     "alarm_control_panel": {"alarm_arm_home", "alarm_arm_away", "alarm_disarm"},
+    "climate": {
+        "set_fan_mode",
+        "set_humidity",
+        "set_hvac_mode",
+        "set_preset_mode",
+        "set_swing_horizontal_mode",
+        "set_swing_mode",
+        "set_temperature",
+        "turn_off",
+        "turn_on",
+    },
     "cover": {"open_cover", "close_cover", "stop_cover", "set_cover_position"},
     "light": {"turn_on", "turn_off"},
     "media_player": {

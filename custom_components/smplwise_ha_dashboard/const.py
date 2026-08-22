@@ -4,7 +4,7 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.7.1.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.8.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
@@ -20,6 +20,7 @@ DEFAULT_CONFIG = {
     "media_backgrounds": {},
     "area_domain_filters": {},
     "area_overrides": {},
+    "entity_overrides": {},
     "area_backgrounds": True,
     "hidden_entities": [],
     "hidden_areas": [],
@@ -29,6 +30,7 @@ DEFAULT_CONFIG = {
 SUPPORTED_DOMAINS = {
     "alarm_control_panel",
     "camera",
+    "climate",
     "cover",
     "light",
     "media_player",

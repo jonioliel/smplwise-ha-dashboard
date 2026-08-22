@@ -9,7 +9,13 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Live Home Assistant state updates.
 - English and Hebrew (including RTL).
 - Responsive desktop, tablet, and mobile layouts.
-- Switches, lights, media players, covers, cameras, and alarm panels.
+- Switches, lights, climate/HVAC entities, media players, covers, cameras, and
+  alarm panels.
+- Dynamic category sections on the whole-home and Area views. Empty room
+  categories are omitted, while the home view focuses on devices active now.
+- Capability-aware HVAC controls for target temperature or temperature range,
+  HVAC mode, fan mode, target humidity, preset, vertical swing, and horizontal
+  swing when each option is exposed by the climate entity.
 - Live camera cards through Home Assistant's native camera stream component.
   When a camera/integration supports WebRTC, Home Assistant negotiates WebRTC
   and falls back to its other supported stream types when required.
@@ -26,6 +32,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - A dedicated view for cameras, alarm panels, and other supported entities that
   are not assigned to a Home Assistant Area.
 - Per-area device-type filters, individual entity visibility, and entity search.
+- Per-entity dashboard name and display-category overrides, including showing a
+  switch under Lighting while preserving its native switch actions.
+- Multi-Area dashboard membership: one Home Assistant entity can be displayed
+  in several rooms without changing or duplicating the native entity.
 - Admin-managed dashboard action policies for users, groups, domains, and
   entities.
 - HACS custom integration and manual installation.
@@ -62,7 +72,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.7.1.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.8.0.js
 ```
 
 Resource type: **JavaScript module**.
@@ -89,6 +99,18 @@ These policies only restrict actions initiated through SmplWise HA Dashboard.
 They do not grant Home Assistant permissions and cannot prevent a user from
 using another Home Assistant dashboard when that user already has permission
 there. Native Home Assistant authorization remains authoritative.
+
+## Entity display and multi-Area membership
+
+Administrators can use **Manage → Edit devices and room membership** to change
+the dashboard name and display category of each supported entity, or select any
+number of Areas in which it should appear. Selecting no Area places it in the
+dashboard's unassigned view. The Reset action restores the Home Assistant name,
+native domain category, and native Area assignment.
+
+These overrides affect only SmplWise HA Dashboard. Service calls always use the
+entity's real Home Assistant domain, and the Home Assistant entity/device
+registry is not modified.
 
 ## Camera and WebRTC
 

@@ -1,4 +1,4 @@
-<!doctype html><html><body style="margin:0"><smplwise-ha-dashboard-panel></smplwise-ha-dashboard-panel><script>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0"><smplwise-ha-dashboard-panel></smplwise-ha-dashboard-panel><script>
 let mockCameraInstance=0;
 class MockCameraStream extends HTMLElement{
  set stateObj(value){this._stateObj=value;this._paint()}
@@ -15,6 +15,8 @@ const states={
  "light.living":{entity_id:"light.living",state:"on",attributes:{friendly_name:"Living light",brightness:128}},
  "switch.coffee":{entity_id:"switch.coffee",state:"off",attributes:{friendly_name:"Coffee"}},
  "media_player.tv":{entity_id:"media_player.tv",state:"playing",attributes:{friendly_name:"TV",media_title:"Demo"}},
+ "climate.living_ac":{entity_id:"climate.living_ac",state:"cool",attributes:{friendly_name:"Living AC",current_temperature:25,temperature:22,hvac_action:"cooling",hvac_modes:["off","cool","heat","heat_cool","auto","dry","fan_only"],fan_mode:"auto",fan_modes:["auto","low","medium","high"],preset_mode:"none",preset_modes:["none","eco","sleep"],swing_mode:"off",swing_modes:["off","vertical","both"],swing_horizontal_mode:"off",swing_horizontal_modes:["off","left_right"],humidity:50,min_humidity:30,max_humidity:80,min_temp:16,max_temp:30,target_temp_step:.5}},
+ "climate.bedroom_ac":{entity_id:"climate.bedroom_ac",state:"off",attributes:{friendly_name:"Bedroom AC",current_temperature:23,temperature:24,hvac_modes:["off","cool","heat","auto"],fan_mode:"low",fan_modes:["low","medium","high"],min_temp:16,max_temp:30,target_temp_step:1}},
  "camera.driveway":{entity_id:"camera.driveway",state:"idle",attributes:{friendly_name:"Driveway camera",supported_features:2,frontend_stream_type:"web_rtc"}},
  "alarm_control_panel.home":{entity_id:"alarm_control_panel.home",state:"disarmed",attributes:{friendly_name:"Home alarm"}},
  "cover.kitchen":{entity_id:"cover.kitchen",state:"open",attributes:{friendly_name:"Kitchen blind",current_position:65}}
@@ -22,16 +24,16 @@ const states={
 for(let i=1;i<=28;i++)states[`light.test_${i}`]={entity_id:`light.test_${i}`,state:i%3?"on":"off",attributes:{friendly_name:`Test light ${i}`,brightness:120}};
 for(let i=2;i<=18;i++)states[`camera.camera_${i}`]={entity_id:`camera.camera_${i}`,state:"idle",attributes:{friendly_name:`Camera ${i}`,supported_features:2,frontend_stream_type:"web_rtc"}};
 const savedConfigs=[],executed=[];
-const hass={language:"en",states,formatEntityState:s=>s.state,callWS:async msg=>{
- if(msg.type.endsWith("/bootstrap"))return {areas:[{id:"living",name:"Living room",floor_id:"ground",picture:"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=80"},{id:"kitchen",name:"Kitchen",floor_id:"ground",picture:null},{id:"bedroom",name:"Bedroom",floor_id:"upper",picture:null}],floors:[{id:"ground",name:"Ground",level:0},{id:"upper",name:"Upper",level:1}],config:{language:"en",theme:"controlly",default_view:"home",camera_grid_count:4,background_source:"automatic",global_background:"",manual_backgrounds:{},media_backgrounds:{},area_domain_filters:{},area_overrides:{},hidden_entities:[],hidden_areas:[],policies:[]},user:{id:"admin",name:"Admin",is_admin:true,groups:[]}};
- if(msg.type==="config/entity_registry/list")return Object.keys(states).map((entity_id,i)=>({entity_id,area_id:["camera.driveway","alarm_control_panel.home"].includes(entity_id)?null:i%3===0?"kitchen":i%4===0?"bedroom":"living"}));
+const hass={language:"en",config:{unit_system:{temperature:"°C"}},states,formatEntityState:s=>s.state,callWS:async msg=>{
+ if(msg.type.endsWith("/bootstrap"))return {areas:[{id:"living",name:"Living room",floor_id:"ground",picture:"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=80"},{id:"kitchen",name:"Kitchen",floor_id:"ground",picture:null},{id:"bedroom",name:"Bedroom",floor_id:"upper",picture:null}],floors:[{id:"ground",name:"Ground",level:0},{id:"upper",name:"Upper",level:1}],config:{language:"en",theme:"controlly",default_view:"home",camera_grid_count:4,background_source:"automatic",global_background:"",manual_backgrounds:{},media_backgrounds:{},area_domain_filters:{},area_overrides:{},entity_overrides:{},hidden_entities:[],hidden_areas:[],policies:[]},user:{id:"admin",name:"Admin",is_admin:true,groups:[]}};
+ if(msg.type==="config/entity_registry/list")return Object.keys(states).map((entity_id,i)=>({entity_id,area_id:["camera.driveway","alarm_control_panel.home"].includes(entity_id)||entity_id.startsWith("camera.camera_")?null:entity_id==="climate.living_ac"?"living":entity_id==="climate.bedroom_ac"?"bedroom":["cover.kitchen","switch.coffee"].includes(entity_id)?"kitchen":i%3===0?"kitchen":i%4===0?"bedroom":"living"}));
  if(msg.type==="config/device_registry/list")return [];
  if(msg.type.endsWith("/admin_context"))return {users:[{id:"u1",name:"User",is_admin:false}],groups:[{id:"g1",name:"Users"}]};
  if(msg.type==="media_source/browse_media"&&msg.media_content_id==="media-source://media_source/local")return {title:"Local media",media_content_id:msg.media_content_id,children:[{title:"Living background",media_class:"image",media_content_type:"image/jpeg",media_content_id:"media-source://media_source/local/living.jpg",thumbnail:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=500&q=75",can_play:true,can_expand:false},{title:"Kitchen background",media_class:"image",media_content_type:"image/jpeg",media_content_id:"media-source://media_source/local/kitchen.jpg",thumbnail:"https://images.unsplash.com/photo-1556912167-f556f1f39fdf?auto=format&fit=crop&w=500&q=75",can_play:true,can_expand:false}]};
  if(msg.type==="media_source/browse_media")return {title:"Media",media_content_id:"media-source://",children:[{title:"Local media",media_class:"directory",media_content_type:"",media_content_id:"media-source://media_source/local",thumbnail:null,can_play:false,can_expand:true},{title:"Audio",media_class:"music",media_content_type:"audio/mpeg",media_content_id:"media-source://demo/song",thumbnail:null,can_play:true,can_expand:false}]};
  if(msg.type==="media_source/resolve_media")return {url:msg.media_content_id.includes("kitchen")?"https://images.unsplash.com/photo-1556912167-f556f1f39fdf?auto=format&fit=crop&w=1400&q=80":"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=80",mime_type:"image/jpeg"};
- if(msg.type.endsWith("/save_config")){savedConfigs.push(structuredClone(msg.config));return msg.config;}
- if(msg.type.endsWith("/execute")){executed.push(structuredClone(msg));return {success:true};}
+ if(msg.type.endsWith("/save_config")){savedConfigs.push(structuredClone(msg.config));document.documentElement.dataset.lastSaved=JSON.stringify(msg.config);return msg.config;}
+ if(msg.type.endsWith("/execute")){executed.push(structuredClone(msg));document.documentElement.dataset.lastExecuted=JSON.stringify(msg);return {success:true};}
  }};
 const panel=document.querySelector("smplwise-ha-dashboard-panel");panel.panel={};panel.hass=hass;
 window.__harness={panel,hass,states,savedConfigs,executed};
