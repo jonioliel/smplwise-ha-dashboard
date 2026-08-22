@@ -18,11 +18,11 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   administrator can exclude individual entities from the Area activity result.
   Floors inherit the live status of their child Areas, and each floor is a
   collapsible group with configurable default and remembered expansion state.
-- A compact two-level floor/Area navigator on the whole-home screen keeps the
+- A compact single-row floor/Area navigator on the whole-home screen keeps the
   **Active / All** switch and device controls visible without page scrolling.
 - One continuous horizontal device rail on the home view. It can switch between
-  **Active** and **All**, and continues from one editable category to the next
-  without building a long vertical device page.
+  **Active** and **All**, continues from one editable category to the next, and
+  keeps the category tabs synchronized while the rail is swiped or scrolled.
 - Dynamic category sections in every Area. Empty room categories and filters
   are omitted automatically.
 - Capability-aware HVAC controls for target temperature or temperature range,
@@ -62,8 +62,8 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   tablet, and mobile, with dense content moving to internal horizontal or
   settings-only scrolling instead of extending the whole page.
 - Administrator controls for text/icon scale, rectangular/square/circular
-  device cards, category names and order, and per-category turn-on/turn-off
-  action labels.
+  device cards, adjustable rectangular card height, category names and order,
+  and per-category turn-on/turn-off action labels.
 - Rich Area headers with optional room image, temperature, humidity, live
   summary, and configurable top/bottom control placement.
 - Admin-managed dashboard action policies for users, groups, domains, and
@@ -102,7 +102,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.10.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.11.0.js
 ```
 
 Resource type: **JavaScript module**.

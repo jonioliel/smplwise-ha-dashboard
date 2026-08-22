@@ -31,11 +31,17 @@ class DashboardStore:
                     **deepcopy(DEFAULT_CONFIG[section]),
                     **(stored.get(section) or {}),
                 }
+            migrated = False
             if previous_version < 2:
                 # v0.9 introduced the weather widget as opt-in. The compact
                 # home screen in v0.10 promotes it to a default information tile.
                 self.data["home_info"]["show_weather"] = True
-                self.data["config_schema_version"] = 2
+                migrated = True
+            if previous_version < 3:
+                self.data["entity_card_height"] = DEFAULT_CONFIG["entity_card_height"]
+                migrated = True
+            if migrated:
+                self.data["config_schema_version"] = 3
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.11.0
+
+- Merge the whole-home floor selector and the selected floor's Areas into one
+  compact horizontal navigation row on desktop, tablet, and mobile.
+- Keep every available device category in one continuous home rail and
+  synchronize the highlighted category tab while the user swipes or scrolls
+  between category sections.
+- Make category tabs direct rail navigation controls. In **Active** mode,
+  categories with no active cards are omitted; **All** restores every available
+  category.
+- Add a live-preview administrator slider for rectangular whole-home card
+  height, with a supported 110–260 px range and persisted schema-3 migration.
+- Verify one-viewport layout and internal-only horizontal scrolling at 1440×900,
+  1024×768, and 390×844 in both LTR and RTL layouts.
+
 ## 0.10.0
 
 - Turn the desktop sidebar floor list into collapsible groups. A floor is now
