@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.10.0
+
+- Turn the desktop sidebar floor list into collapsible groups. A floor is now
+  marked active whenever an activity-contributing entity in any child Area is
+  active.
+- Add manager controls for the default collapsed/expanded floor state and for
+  remembering each browser's last expansion state.
+- Replace the large whole-home room listing with a compact two-level floor and
+  Area navigator so the **Active / All** selector and device rail remain in the
+  first viewport.
+- Rework home, Area, camera, and management layouts to remain inside one
+  desktop, tablet, or mobile viewport. Dense controls use horizontal rails or
+  an internal manager scroller.
+- Give the camera center its own manager section and allow 4, 8, 12, or 16
+  cameras to be selected as its saved default.
+- Add whole-home alarm cards and administrator selection of which alarm panels
+  appear, including alarm entities without a native Area.
+- Make enabled weather visible even when no entity is found by showing a clear
+  diagnostic, while preserving automatic `weather.*` discovery and explicit
+  entity selection.
+- Add independent multi-device category and display-Area bulk actions. Applying
+  one bulk field preserves every unrelated override.
+- Migrate stored configuration to schema 2 with deep-merged home, room, and
+  floor-navigation defaults so upgrades preserve existing settings.
+- Expand the local browser harness to two unassigned alarm panels and verify
+  1440 px desktop, 1024 px tablet, 390 px mobile, English/RTL Hebrew, 4/16 camera
+  grids, camera zoom, alarm and HVAC dialogs, bulk edits, floor-state memory,
+  weather selection, and scroll/dropdown stability under rapid HA updates.
+
 ## 0.9.0
 
 - Replace the featured-room home hero with a neutral date/time surface so an

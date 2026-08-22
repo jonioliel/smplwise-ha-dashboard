@@ -4,11 +4,12 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.9.0.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.10.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
 DEFAULT_CONFIG = {
+    "config_schema_version": 2,
     "language": "auto",
     "theme": "smplwise",
     "default_view": "home",
@@ -18,13 +19,19 @@ DEFAULT_CONFIG = {
     "entity_card_shape": "rectangle",
     "category_settings": {},
     "home_info": {
-        "show_weather": False,
+        "show_weather": True,
         "weather_entity_id": None,
         "show_parasha": False,
         "parasha_entity_id": None,
         "show_shabbat": False,
         "candle_lighting_entity_id": None,
         "havdalah_entity_id": None,
+        "show_alarms": True,
+        "alarm_entity_ids": None,
+    },
+    "floor_navigation": {
+        "remember_expansion": True,
+        "default_collapsed": True,
     },
     "room_defaults": {
         "show_image": True,

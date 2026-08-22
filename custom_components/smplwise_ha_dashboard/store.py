@@ -24,11 +24,28 @@ class DashboardStore:
         """Load and merge stored settings."""
         stored = await self._store.async_load()
         if stored:
+            previous_version = int(stored.get("config_schema_version") or 1)
             self.data.update(stored)
+            for section in ("home_info", "room_defaults", "floor_navigation"):
+                self.data[section] = {
+                    **deepcopy(DEFAULT_CONFIG[section]),
+                    **(stored.get(section) or {}),
+                }
+            if previous_version < 2:
+                # v0.9 introduced the weather widget as opt-in. The compact
+                # home screen in v0.10 promotes it to a default information tile.
+                self.data["home_info"]["show_weather"] = True
+                self.data["config_schema_version"] = 2
+                await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:
         """Persist validated settings."""
         self.data = {**deepcopy(DEFAULT_CONFIG), **data}
+        for section in ("home_info", "room_defaults", "floor_navigation"):
+            self.data[section] = {
+                **deepcopy(DEFAULT_CONFIG[section]),
+                **(data.get(section) or {}),
+            }
         await self._store.async_save(self.data)
 
     def can_control(

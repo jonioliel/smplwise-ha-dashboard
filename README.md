@@ -16,6 +16,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   values read from Home Assistant entities.
 - Floor-grouped room navigation with live active/inactive indicators. An
   administrator can exclude individual entities from the Area activity result.
+  Floors inherit the live status of their child Areas, and each floor is a
+  collapsible group with configurable default and remembered expansion state.
+- A compact two-level floor/Area navigator on the whole-home screen keeps the
+  **Active / All** switch and device controls visible without page scrolling.
 - One continuous horizontal device rail on the home view. It can switch between
   **Active** and **All**, and continues from one editable category to the next
   without building a long vertical device page.
@@ -28,7 +32,7 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   When a camera/integration supports WebRTC, Home Assistant negotiates WebRTC
   and falls back to its other supported stream types when required.
 - A dedicated camera center in the desktop sidebar and mobile navigation, with
-  selectable 4, 8, 12, or 16-camera pages.
+  selectable 4, 8, 12, or 16-camera pages and an administrator-defined default.
 - Full-screen camera enlargement with 100–400% zoom, slider/buttons, mouse-wheel
   zoom, and drag-to-pan on desktop and touch screens.
 - Selectable SmplWise Dark and image-derived Controlly Glass designs.
@@ -43,11 +47,20 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Per-area device-type filters, individual entity visibility, and entity search.
 - Per-entity dashboard name and display-category overrides, including showing a
   switch under Lighting while preserving its native switch actions.
+- Independent bulk editing in **Manage → Devices**: selected entities can have
+  only their category changed or only their display Area replaced; the two
+  operations never require one another.
 - Multi-Area dashboard membership: one Home Assistant entity can be displayed
   in several rooms without changing or duplicating the native entity.
 - A categorized manager instead of one long settings page: appearance, home
-  information, rooms, categories, entities, backgrounds, filters, permissions,
-  and native unassigned entities.
+  information, floor navigation, cameras, rooms, categories, entities,
+  backgrounds, filters, permissions, and native unassigned entities.
+- Optional alarm access on the whole-home information surface, including a
+  multi-alarm selector in management. Alarm panels remain available even when
+  they do not have a Home Assistant Area.
+- Viewport-contained home, Area, camera, and management shells on desktop,
+  tablet, and mobile, with dense content moving to internal horizontal or
+  settings-only scrolling instead of extending the whole page.
 - Administrator controls for text/icon scale, rectangular/square/circular
   device cards, category names and order, and per-category turn-on/turn-off
   action labels.
@@ -89,7 +102,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.9.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.10.0.js
 ```
 
 Resource type: **JavaScript module**.
