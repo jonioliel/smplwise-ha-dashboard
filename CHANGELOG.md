@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.12.1
+
+- Refine the complete phone interface at 360–390 px with full-height touch
+  targets, single-line scrollable filters, hidden internal scrollbars, and
+  compact room-camera overlays.
+- Keep 8, 12, and 16-camera views readable on phones with a two-column,
+  internally scrolling live grid instead of undersized four-column tiles.
+- Collapse device editors on phones while preserving the full expanded editor
+  on desktop, reducing the initial mobile Devices page from dozens of long
+  forms to a scannable list.
+- Improve HVAC mode contrast and verify all home, floor, Area, room, camera,
+  popup, and 11 management screens at 360×800 and 390×844 in English and
+  Hebrew RTL, followed by a 1440×900 desktop regression check.
+
 ## 0.12.0
 
 - Replace the ambiguous **Your home** block with a configurable **Activity
