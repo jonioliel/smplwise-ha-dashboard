@@ -26,7 +26,12 @@ class DashboardStore:
         if stored:
             previous_version = int(stored.get("config_schema_version") or 1)
             self.data.update(stored)
-            for section in ("home_info", "room_defaults", "floor_navigation"):
+            for section in (
+                "home_info",
+                "home_layout",
+                "room_defaults",
+                "floor_navigation",
+            ):
                 self.data[section] = {
                     **deepcopy(DEFAULT_CONFIG[section]),
                     **(stored.get(section) or {}),
@@ -40,14 +45,21 @@ class DashboardStore:
             if previous_version < 3:
                 self.data["entity_card_height"] = DEFAULT_CONFIG["entity_card_height"]
                 migrated = True
+            if previous_version < 4:
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 3
+                self.data["config_schema_version"] = 4
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:
         """Persist validated settings."""
         self.data = {**deepcopy(DEFAULT_CONFIG), **data}
-        for section in ("home_info", "room_defaults", "floor_navigation"):
+        for section in (
+            "home_info",
+            "home_layout",
+            "room_defaults",
+            "floor_navigation",
+        ):
             self.data[section] = {
                 **deepcopy(DEFAULT_CONFIG[section]),
                 **(data.get(section) or {}),

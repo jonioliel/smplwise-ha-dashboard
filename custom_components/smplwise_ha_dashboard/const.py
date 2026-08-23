@@ -4,12 +4,12 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.11.0.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.12.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
 DEFAULT_CONFIG = {
-    "config_schema_version": 3,
+    "config_schema_version": 4,
     "language": "auto",
     "theme": "smplwise",
     "default_view": "home",
@@ -30,6 +30,16 @@ DEFAULT_CONFIG = {
         "show_alarms": True,
         "alarm_entity_ids": None,
     },
+    "home_layout": {
+        "show_activity_overview": True,
+        "activity_position": "end",
+        "activity_width": 300,
+        "activity_scale": 1.0,
+        "info_scale": 1.0,
+        "info_alignment": "end",
+        "activity_categories": ["light", "switch", "climate", "cover"],
+        "info_order": ["weather", "parasha", "candle", "havdalah"],
+    },
     "floor_navigation": {
         "remember_expansion": True,
         "default_collapsed": True,
@@ -39,6 +49,12 @@ DEFAULT_CONFIG = {
         "show_temperature": True,
         "show_info": True,
         "controls_position": "bottom",
+        "hero_size": 42,
+        "controls_size": 58,
+        "hero_widget_scale": 1.0,
+        "control_card_width": 195,
+        "hero_camera": "auto",
+        "hero_camera_size": 34,
     },
     "background_source": "automatic",
     "global_background": "",

@@ -14,6 +14,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - A whole-home information surface centered on local date/time, with optional
   current weather plus weekly Torah portion, candle-lighting, and Havdalah
   values read from Home Assistant entities.
+- A configurable whole-home layout editor for the activity overview position,
+  width, scale, visible categories, category order, information-widget scale,
+  information order, and logical alignment. Activity totals are direct shortcuts
+  to their category in the continuous device rail.
 - Floor-grouped room navigation with live active/inactive indicators. An
   administrator can exclude individual entities from the Area activity result.
   Floors inherit the live status of their child Areas, and each floor is a
@@ -65,7 +69,12 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   device cards, adjustable rectangular card height, category names and order,
   and per-category turn-on/turn-off action labels.
 - Rich Area headers with optional room image, temperature, humidity, live
-  summary, and configurable top/bottom control placement.
+  summary, and configurable top/bottom control placement. Administrators can
+  set global room proportions, header-widget scale, control-card width, and
+  camera-window size, then override each value for an individual Area.
+- Optional live Area cameras in the upper room section. The global default can
+  show the first camera automatically or hide cameras, while each Area can
+  inherit that behavior, choose a specific camera, or disable it.
 - Admin-managed dashboard action policies for users, groups, domains, and
   entities.
 - HACS custom integration and manual installation.
@@ -102,7 +111,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.11.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.12.0.js
 ```
 
 Resource type: **JavaScript module**.

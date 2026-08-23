@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.12.0
+
+- Replace the ambiguous **Your home** block with a configurable **Activity
+  overview** whose live category totals link directly to the matching device
+  rail section.
+- Add whole-home controls for activity-overview visibility, logical side,
+  width, metric scale, visible categories, category order, information-widget
+  scale, information order, and clock/information alignment.
+- Add global and per-Area sizing for the room hero, control section, hero
+  widgets, device-card width, and live camera window.
+- Add an optional live camera overlay to each Area hero. It can automatically
+  use the first camera assigned to the Area, select a specific camera per Area,
+  inherit the global behavior, or be disabled.
+- Extend stored configuration to schema 4 with deep-merged defaults so existing
+  dashboards gain the new controls without losing their settings.
+- Expand the local harness with an Area-assigned WebRTC camera and verify
+  persistence, live stream mounting, activity shortcuts, desktop 1440×900,
+  tablet 1024×768, phone 390×844, LTR, and Hebrew RTL layouts.
+
 ## 0.11.0
 
 - Merge the whole-home floor selector and the selected floor's Areas into one
