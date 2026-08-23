@@ -47,8 +47,13 @@ class DashboardStore:
                 migrated = True
             if previous_version < 4:
                 migrated = True
+            if previous_version < 5:
+                # The original logical-end default put Hebrew clock content on
+                # the left. Schema 5 promotes a right-aligned RTL home layout.
+                self.data["home_layout"]["info_alignment"] = "start"
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 4
+                self.data["config_schema_version"] = 5
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

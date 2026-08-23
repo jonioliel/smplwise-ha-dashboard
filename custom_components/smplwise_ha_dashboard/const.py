@@ -4,12 +4,12 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.12.1.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.13.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
 DEFAULT_CONFIG = {
-    "config_schema_version": 4,
+    "config_schema_version": 5,
     "language": "auto",
     "theme": "smplwise",
     "default_view": "home",
@@ -36,9 +36,15 @@ DEFAULT_CONFIG = {
         "activity_width": 300,
         "activity_scale": 1.0,
         "info_scale": 1.0,
-        "info_alignment": "end",
+        "info_alignment": "start",
         "activity_categories": ["light", "switch", "climate", "cover"],
         "info_order": ["weather", "parasha", "candle", "havdalah"],
+        "section_order": ["overview", "navigation", "devices"],
+        "desktop_overview_min": 300,
+        "desktop_devices_height": 210,
+        "mobile_overview_min": 180,
+        "mobile_devices_height": 190,
+        "section_gap": 10,
     },
     "floor_navigation": {
         "remember_expansion": True,

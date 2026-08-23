@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.13.0
+
+- Rebuild the whole-home screen as three compact, independently ordered blocks
+  for the overview, floor/Area navigation, and swipeable device rail. The new
+  layout removes the oversized empty hero and keeps the working controls visible
+  in one viewport on desktop, tablet, and phone.
+- Add a visual whole-home editor with live desktop and phone previews, block
+  reordering, activity-summary placement, logical clock alignment, and separate
+  desktop/mobile sizing controls for the overview, device rail, and spacing.
+- Add combined device-management filters for display category and Area alongside
+  the existing name/entity search, including live result totals and support for
+  unassigned devices.
+- Correct Hebrew RTL alignment so the clock and information start on the physical
+  right, prevent long clock strings from wrapping, and migrate existing schema-4
+  layouts to the new logical-start default.
+- Extend stored configuration to schema 5 and verify all user views, a room view,
+  and all 11 management sections at 390×844 in Hebrew RTL, plus focused 360×800
+  and 1440×900 regression checks with no page-level horizontal overflow.
+
 ## 0.12.1
 
 - Refine the complete phone interface at 360–390 px with full-height touch
