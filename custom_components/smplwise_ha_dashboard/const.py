@@ -4,12 +4,12 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.14.0.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.15.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
 DEFAULT_CONFIG = {
-    "config_schema_version": 6,
+    "config_schema_version": 7,
     "language": "auto",
     "theme": "smplwise",
     "default_view": "home",
@@ -29,6 +29,7 @@ DEFAULT_CONFIG = {
         "havdalah_entity_id": None,
         "show_alarms": True,
         "alarm_entity_ids": None,
+        "custom_widgets": [],
     },
     "home_layout": {
         "show_activity_overview": True,
@@ -45,13 +46,24 @@ DEFAULT_CONFIG = {
         "clock_scale": 1.0,
         "overview_padding": 18,
         "info_columns": 2,
+        "info_canvas_direction": "auto",
+        "info_canvas_rows": 3,
+        "info_canvas_gap": 10,
+        "info_widgets": [
+            {"id": "clock", "type": "clock", "column": 1, "row": 1, "width": 4, "height": 2, "align": "right", "scale": 1.0, "visible": True, "order": 1},
+            {"id": "weather", "type": "weather", "column": 5, "row": 1, "width": 2, "height": 1, "align": "right", "scale": 1.0, "visible": True, "order": 2},
+            {"id": "parasha", "type": "parasha", "column": 7, "row": 1, "width": 2, "height": 1, "align": "right", "scale": 1.0, "visible": True, "order": 3},
+            {"id": "candle", "type": "candle", "column": 5, "row": 2, "width": 2, "height": 1, "align": "right", "scale": 1.0, "visible": True, "order": 4},
+            {"id": "havdalah", "type": "havdalah", "column": 7, "row": 2, "width": 2, "height": 1, "align": "right", "scale": 1.0, "visible": True, "order": 5},
+            {"id": "alarms", "type": "alarms", "column": 1, "row": 3, "width": 8, "height": 1, "align": "right", "scale": 1.0, "visible": True, "order": 6},
+        ],
         "show_navigation": True,
         "home_card_width": 220,
         "home_card_width_mobile": 210,
         "category_width": 102,
-        "desktop_overview_min": 280,
+        "desktop_overview_min": 340,
         "desktop_devices_height": 240,
-        "mobile_overview_min": 220,
+        "mobile_overview_min": 240,
         "mobile_devices_height": 190,
         "section_gap": 10,
     },

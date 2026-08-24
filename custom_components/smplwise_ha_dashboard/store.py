@@ -63,8 +63,18 @@ class DashboardStore:
                 if layout.get("mobile_overview_min") == 180:
                     layout["mobile_overview_min"] = 220
                 migrated = True
+            if previous_version < 7:
+                # Schema 7 replaces the fixed two-column information block
+                # with a direction-aware 12-column canvas. Restore enough
+                # height for information to remain legible on wall panels.
+                layout = self.data["home_layout"]
+                if layout.get("desktop_overview_min") in (280, 300):
+                    layout["desktop_overview_min"] = 340
+                if layout.get("mobile_overview_min") in (180, 220):
+                    layout["mobile_overview_min"] = 240
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 6
+                self.data["config_schema_version"] = 7
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

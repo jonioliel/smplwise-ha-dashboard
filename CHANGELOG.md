@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.15.0
+
+- Replace the fixed whole-home information row with a real 12-column graphical
+  canvas. Administrators can place every widget by column and row, change its
+  width and height, scale it, hide it, and choose physical right, center, or
+  left content alignment.
+- Add explicit Automatic, RTL, and LTR canvas-direction settings so Hebrew
+  layouts begin on the right while English layouts begin on the left, without
+  reversing numbers or directional controls.
+- Add custom Home Assistant entity-state widgets with a selectable entity,
+  editable label, graphical placement and sizing, and removal from the canvas.
+- Restore a useful whole-home information height and rebalance the clock,
+  weather, weekly portion, Shabbat, alarm, and activity-summary surfaces.
+- Add compact phone and tablet canvas compositions that keep the complete home
+  view readable without an internal information scrollbar or a broken narrow
+  desktop grid.
+- Migrate stored settings to schema 7 while retaining prior layout choices and
+  automatically updating the former compact overview defaults.
+- Verify the home screen and graphical editor at 1440x900, 1024x768, 390x844,
+  and 360x800 in English and Hebrew RTL, including a saved custom entity widget
+  and clean browser console output.
+
 ## 0.14.0
 
 - Rebalance the whole-home screen so the information panel uses a deliberate,

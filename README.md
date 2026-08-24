@@ -19,6 +19,14 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   widget and clock scaling, navigation visibility, internal spacing, and
   independent desktop/mobile card sizing. Activity totals are direct shortcuts
   to their category in the continuous device rail.
+- A direction-aware 12-column information canvas with explicit Automatic,
+  RTL, and LTR modes. Every information widget has independent column, row,
+  width, height, physical text alignment, scale, and visibility controls in the
+  graphical editor.
+- Custom Home Assistant entity-state widgets can be added to the information
+  canvas, renamed, positioned, resized, duplicated through multiple entity
+  selections, or removed. The canvas automatically becomes a compact two-column
+  phone layout while preserving the chosen reading direction.
 - Floor-grouped room navigation with live active/inactive indicators. An
   administrator can exclude individual entities from the Area activity result.
   Floors inherit the live status of their child Areas, and each floor is a
@@ -114,7 +122,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.14.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.15.0.js
 ```
 
 Resource type: **JavaScript module**.
