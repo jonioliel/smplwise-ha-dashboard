@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.15.1
+
+- Rebuild the whole-home device surface as two distinct optical-glass frames:
+  a darker outer background separator and a clearer inner rail with reflected
+  light, saturation, blur, and subtle edge highlights.
+- Replace opaque white active cards with translucent frosted glass while
+  retaining a strong blue state glow and readable white controls.
+- Add layered specular highlights, soft colored reflections, refined borders,
+  and depth shadows to category and entity cards without blocking the selected
+  background image.
+- Reduce blur and spacing on phones while keeping the same glass hierarchy,
+  card readability, horizontal navigation, and clean browser console output.
+
 ## 0.15.0
 
 - Replace the fixed whole-home information row with a real 12-column graphical
