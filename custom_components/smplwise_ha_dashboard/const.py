@@ -4,12 +4,12 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.13.0.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.14.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
 DEFAULT_CONFIG = {
-    "config_schema_version": 5,
+    "config_schema_version": 6,
     "language": "auto",
     "theme": "smplwise",
     "default_view": "home",
@@ -40,9 +40,18 @@ DEFAULT_CONFIG = {
         "activity_categories": ["light", "switch", "climate", "cover"],
         "info_order": ["weather", "parasha", "candle", "havdalah"],
         "section_order": ["overview", "navigation", "devices"],
-        "desktop_overview_min": 300,
-        "desktop_devices_height": 210,
-        "mobile_overview_min": 180,
+        "overview_style": "dashboard",
+        "activity_layout": "grid",
+        "clock_scale": 1.0,
+        "overview_padding": 18,
+        "info_columns": 2,
+        "show_navigation": True,
+        "home_card_width": 220,
+        "home_card_width_mobile": 210,
+        "category_width": 102,
+        "desktop_overview_min": 280,
+        "desktop_devices_height": 240,
+        "mobile_overview_min": 220,
         "mobile_devices_height": 190,
         "section_gap": 10,
     },
@@ -61,6 +70,11 @@ DEFAULT_CONFIG = {
         "control_card_width": 195,
         "hero_camera": "auto",
         "hero_camera_size": 34,
+        "mobile_hero_size": 38,
+        "mobile_control_card_width": 160,
+        "hero_content_alignment": "start",
+        "hero_overlay": 58,
+        "control_gap": 8,
     },
     "background_source": "automatic",
     "global_background": "",

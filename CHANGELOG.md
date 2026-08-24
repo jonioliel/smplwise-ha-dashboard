@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.14.0
+
+- Rebalance the whole-home screen so the information panel uses a deliberate,
+  compact height and the device controls receive the remaining useful viewport
+  space instead of leaving a large empty hero.
+- Expand the graphical home editor with dashboard/focus information styles,
+  grid/list activity layouts, navigation visibility, information columns,
+  clock and inner spacing controls, category width, and separate desktop/phone
+  device-card widths.
+- Replace the long room-layout form with a graphical room-screen editor. It can
+  edit global defaults or a specific Area against live desktop and phone
+  previews, including header proportions, camera, overlay, content alignment,
+  widget size, control spacing, and independent desktop/mobile card widths.
+- Keep room names and visibility in a compact companion manager, add per-room
+  layout reset, and persist the expanded configuration through schema 6.
+- Refine the phone home and room proportions so weather, Shabbat information,
+  alarms, live room context, and the swipeable controls remain readable without
+  page-level horizontal or vertical overflow.
+- Verify desktop and phone layouts at 1440×900 and 390×844 in English and Hebrew
+  RTL, including live preview controls, room-specific persistence, schema
+  migration, and clean browser console output.
+
 ## 0.13.0
 
 - Rebuild the whole-home screen as three compact, independently ordered blocks

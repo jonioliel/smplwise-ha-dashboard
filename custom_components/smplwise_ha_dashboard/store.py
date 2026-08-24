@@ -52,8 +52,19 @@ class DashboardStore:
                 # the left. Schema 5 promotes a right-aligned RTL home layout.
                 self.data["home_layout"]["info_alignment"] = "start"
                 migrated = True
+            if previous_version < 6:
+                # Schema 6 turns the whole-home hero into a fixed visual block
+                # and gives the remaining height to useful device controls.
+                layout = self.data["home_layout"]
+                if layout.get("desktop_overview_min") == 300:
+                    layout["desktop_overview_min"] = 280
+                if layout.get("desktop_devices_height") == 210:
+                    layout["desktop_devices_height"] = 240
+                if layout.get("mobile_overview_min") == 180:
+                    layout["mobile_overview_min"] = 220
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 5
+                self.data["config_schema_version"] = 6
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

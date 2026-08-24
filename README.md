@@ -14,9 +14,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - A whole-home information surface centered on local date/time, with optional
   current weather plus weekly Torah portion, candle-lighting, and Havdalah
   values read from Home Assistant entities.
-- A configurable whole-home layout editor for the activity overview position,
-  width, scale, visible categories, category order, information-widget scale,
-  information order, and logical alignment. Activity totals are direct shortcuts
+- A graphical whole-home editor with live desktop and phone previews, block
+  ordering, compact/focus information styles, grid/list activity layouts,
+  widget and clock scaling, navigation visibility, internal spacing, and
+  independent desktop/mobile card sizing. Activity totals are direct shortcuts
   to their category in the continuous device rail.
 - Floor-grouped room navigation with live active/inactive indicators. An
   administrator can exclude individual entities from the Area activity result.
@@ -70,8 +71,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   and per-category turn-on/turn-off action labels.
 - Rich Area headers with optional room image, temperature, humidity, live
   summary, and configurable top/bottom control placement. Administrators can
-  set global room proportions, header-widget scale, control-card width, and
-  camera-window size, then override each value for an individual Area.
+  use the graphical room editor to switch between desktop and phone previews,
+  edit global defaults or one Area, and tune header proportions, overlay,
+  content alignment, control spacing, widget scale, desktop/mobile card width,
+  and camera-window size.
 - Optional live Area cameras in the upper room section. The global default can
   show the first camera automatically or hide cameras, while each Area can
   inherit that behavior, choose a specific camera, or disable it.
@@ -111,7 +114,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.13.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.14.0.js
 ```
 
 Resource type: **JavaScript module**.
