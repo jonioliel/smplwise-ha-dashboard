@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.17.1
+
+- Fix the Control Center desktop composition collapsing its information canvas
+  into an undersized grid row and leaving most of the viewport empty.
+- Restore a balanced, viewport-filling hierarchy between the information
+  canvas, compact floor/room navigation, and the live device rail.
+- Improve the mobile information canvas so its four content rows use the
+  available height and multiple alarm cards fit without visual clipping.
+- Extend the browser harness with Hebrew and A-E preset parameters and verify
+  all five compositions at desktop and phone viewports without page overflow.
+
 ## 0.17.0
 
 - Add all five whole-home compositions to the graphical home editor: Control
