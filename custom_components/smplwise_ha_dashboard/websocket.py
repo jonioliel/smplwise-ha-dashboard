@@ -44,6 +44,8 @@ ALLOWED_SERVICES = {
         "turn_on",
         "turn_off",
     },
+    "scene": {"turn_on"},
+    "script": {"turn_on"},
     "switch": {"turn_on", "turn_off"},
 }
 
@@ -239,7 +241,11 @@ def async_register_commands(hass: HomeAssistant, store: DashboardStore) -> None:
                 return
             data = {**msg["service_data"], "entity_id": entity_id}
             await hass.services.async_call(
-                requested_domain, requested_service, data, blocking=True
+                requested_domain,
+                requested_service,
+                data,
+                blocking=True,
+                context=connection.context(msg),
             )
         except Exception as err:  # Defensive boundary for all custom API failures.
             _LOGGER.exception(

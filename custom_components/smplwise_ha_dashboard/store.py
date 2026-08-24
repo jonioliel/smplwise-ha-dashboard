@@ -79,8 +79,13 @@ class DashboardStore:
                 # therefore preserves existing installations visually.
                 self.data["room_defaults"]["layout_preset"] = "deck"
                 migrated = True
+            if previous_version < 9:
+                # Schema 9 adds five purpose-built whole-home compositions.
+                # Control center is the closest match to the legacy screen.
+                self.data["home_layout"]["layout_preset"] = "control"
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 8
+                self.data["config_schema_version"] = 9
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

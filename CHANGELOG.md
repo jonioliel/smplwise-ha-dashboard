@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.17.0
+
+- Add all five whole-home compositions to the graphical home editor: Control
+  Center, Home by Rooms, Daily Briefing, Split Operations, and Scenes & Actions.
+- Connect every composition to live Home Assistant areas, entities, alarms,
+  weather information, and scene/script actions instead of static demo data.
+- Add purpose-built desktop, tablet, and phone layouts with logical RTL/LTR
+  alignment, readable information hierarchy, compact navigation, and contained
+  horizontal device rails.
+- Add schema-9 persistence and a safe migration that preserves the legacy
+  whole-home layout as the default Control Center preset.
+- Allow scene and script activation through the dashboard WebSocket API while
+  retaining Home Assistant permissions and SmplWise policy enforcement.
+
 ## 0.16.0
 
 - Add the three selected room compositions to the graphical room editor:
