@@ -9,6 +9,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Live Home Assistant state updates.
 - English and Hebrew (including RTL).
 - Responsive desktop, tablet, and mobile layouts.
+- Three purpose-built room layouts in the graphical room editor: **C · Floating
+  Islands**, **D · Control Deck**, and **E · Cinema Rail**. Each has a dedicated
+  desktop and phone composition, while room names and data use logical start
+  alignment—right in Hebrew and left in English.
 - Switches, lights, climate/HVAC entities, media players, covers, cameras, and
   alarm panels.
 - A whole-home information surface centered on local date/time, with optional
@@ -122,7 +126,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.15.1.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.16.0.js
 ```
 
 Resource type: **JavaScript module**.

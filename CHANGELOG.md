@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.16.0
+
+- Add the three selected room compositions to the graphical room editor:
+  **C · Floating Islands**, **D · Control Deck**, and **E · Cinema Rail**.
+- Give every preset a purpose-built desktop and phone layout while retaining
+  live entity cards, category filtering, room cameras, and existing controls.
+- Replace the former vertical-only room alignment behavior with true logical
+  inline alignment: room name, temperature, status, and information align right
+  in Hebrew RTL and left in English LTR.
+- Add live preset previews, visual selection cards, per-room overrides, reset
+  support, schema-8 persistence, and a legacy-layout migration to Control Deck.
+
 ## 0.15.1
 
 - Rebuild the whole-home device surface as two distinct optical-glass frames:

@@ -73,8 +73,14 @@ class DashboardStore:
                 if layout.get("mobile_overview_min") in (180, 220):
                     layout["mobile_overview_min"] = 240
                 migrated = True
+            if previous_version < 8:
+                # Schema 8 introduces the three purpose-built room layouts.
+                # The deck preset is closest to the legacy stacked layout and
+                # therefore preserves existing installations visually.
+                self.data["room_defaults"]["layout_preset"] = "deck"
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 7
+                self.data["config_schema_version"] = 8
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

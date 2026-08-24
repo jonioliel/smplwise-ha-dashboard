@@ -10,7 +10,7 @@ if(!location.search.includes("fallback=1"))customElements.define("ha-camera-stre
 else window.loadCardHelpers=async()=>({createCardElement:config=>{const card=document.createElement("div");card.style.cssText="display:grid;width:100%;height:100%;place-items:center;background:linear-gradient(135deg,#263744,#090b0d);color:white";card.textContent=`PICTURE ENTITY · ${config.entity}`;return card}});
 window.__mockCameraInstanceCount=()=>mockCameraInstance;
 </script><script type="module">
-import "../custom_components/smplwise_ha_dashboard/frontend/smplwise-ha-dashboard.js?v=0.15.1";
+import "../custom_components/smplwise_ha_dashboard/frontend/smplwise-ha-dashboard.js?v=0.16.0";
 const states={
  "light.living":{entity_id:"light.living",state:"on",attributes:{friendly_name:"Living light",brightness:128}},
  "switch.coffee":{entity_id:"switch.coffee",state:"off",attributes:{friendly_name:"Coffee"}},

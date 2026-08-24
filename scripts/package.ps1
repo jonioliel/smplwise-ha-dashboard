@@ -8,6 +8,7 @@ if (Test-Path -LiteralPath $archive) {
     Remove-Item -LiteralPath $archive -Force
 }
 
+Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::Open(
     $archive,
@@ -20,7 +21,7 @@ try {
             $_.Extension -ne '.pyc'
         } |
         ForEach-Object {
-            $relative = [System.IO.Path]::GetRelativePath($source, $_.FullName)
+            $relative = $_.FullName.Substring($source.Length).TrimStart([char[]]"\/")
             $entry = "smplwise_ha_dashboard/" + $relative.Replace('\', '/')
             [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
                 $zip,
