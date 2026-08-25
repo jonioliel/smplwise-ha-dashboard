@@ -57,6 +57,14 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Full-screen camera enlargement with 100–400% zoom, slider/buttons, mouse-wheel
   zoom, and drag-to-pan on desktop and touch screens.
 - Selectable SmplWise Dark and image-derived Controlly Glass designs.
+- Ten selectable device-card treatments in **Manage → Appearance**: Luminous
+  Frost, Neon Rim, Split Command, Ambient Color Wash, Physical Toggle, High
+  Contrast, Halo Orb, Instrument Ring, Light Spine, and Lucid Minimal. Every
+  style includes a stronger illuminated active state, explicit On/Off badge,
+  and a dedicated action surface.
+- Independent Compact, Standard, and Large device-card sizes for desktop and
+  phone. Desktop Compact deliberately reproduces the smaller phone-card
+  density while retaining the selected room and whole-home layouts.
 - Automatic Area pictures, manual URLs, or visual background selection from
   the existing Home Assistant Media library.
 - One global fallback background for areas that do not have an Area picture or
@@ -130,7 +138,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.18.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.19.0.js
 ```
 
 Resource type: **JavaScript module**.

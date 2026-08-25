@@ -92,8 +92,21 @@ class DashboardStore:
                     "vertical_categories"
                 )
                 migrated = True
+            if previous_version < 11:
+                # Schema 11 introduces selectable visual treatments for device
+                # cards and independent desktop/mobile density controls.
+                self.data["entity_card_style"] = DEFAULT_CONFIG[
+                    "entity_card_style"
+                ]
+                self.data["desktop_card_size"] = DEFAULT_CONFIG[
+                    "desktop_card_size"
+                ]
+                self.data["mobile_card_size"] = DEFAULT_CONFIG[
+                    "mobile_card_size"
+                ]
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 10
+                self.data["config_schema_version"] = 11
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

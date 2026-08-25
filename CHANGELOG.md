@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.19.0
+
+- Add all ten approved glossy device-card designs to a visual style gallery in
+  Manage → Appearance: Luminous Frost, Neon Rim, Split Command, Ambient Color
+  Wash, Physical Toggle, High Contrast, Halo Orb, Instrument Ring, Light Spine,
+  and Lucid Minimal.
+- Strengthen live-state communication across every style with a full-card
+  illuminated active treatment, explicit On/Off badge, brighter category icon,
+  and a clearer dedicated action surface.
+- Add independent Compact, Standard, and Large card sizes for desktop and
+  phone, including a desktop Compact option that reproduces the small phone
+  cards requested for wall and computer displays.
+- Add schema-11 defaults and migration, Hebrew/English labels, responsive RTL
+  styling, and a smoke test covering all ten styles across all three desktop
+  sizes.
+
 ## 0.18.0
 
 - Added a mobile home-screen layout option that displays devices in vertically stacked categories with natural page scrolling and no horizontal device rail.
