@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.20.0
+
+- Rebuilt device cards around a real control-card hierarchy—state badge,
+  category icon, primary metric, entity information, and a dedicated control
+  surface—instead of recoloring one generic card.
+- Recreated all ten approved mockup styles with materially different visual
+  systems: luminous frost, neon rim, split command, ambient wash, physical
+  toggle, high contrast, halo orb, instrument ring, light spine, and lucid
+  minimal.
+- Made active devices unmistakable using category-colored illumination, full
+  card glow, stronger borders, illuminated icons, and explicit Hebrew/English
+  state and action labels.
+- Rebuilt the whole-home desktop composition so the information canvas,
+  activity summary, room navigation, and full device cards remain readable at
+  both 1440×900 and compact 1280×720 control-screen resolutions.
+- Added a stable fixed background canvas that no longer stretches or jumps with
+  the mobile document height.
+- Fixed phone and tablet breakpoints through 900 px: no horizontal device rail
+  in the default mobile mode, natural vertical category scrolling, two-column
+  cards at normal phone widths, one-column cards on narrow phones, and stacked
+  room controls.
+- Reset desktop grid coordinates for information widgets only on mobile, which
+  removes the hidden 599 px layout overflow that distorted 390 px screens.
+- Extended the local browser harness with card-style, view, and room parameters
+  and verified home, room, cameras, settings, RTL, interactions, and all ten
+  styles at 320, 390, 768, 1280, and 1440 px widths.
+
 ## 0.19.0
 
 - Add all ten approved glossy device-card designs to a visual style gallery in

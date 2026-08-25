@@ -99,8 +99,12 @@ const offCard = dashboard._entityCardHtml(offLight);
 const onCard = dashboard._entityCardHtml(onLight);
 assert.match(offCard, /category-light/);
 assert.match(offCard, /entityStateWord">כבוי/);
-assert.match(onCard, /class="entity category-light domain-light[^\"]* on/);
+assert.match(onCard, /class="entity entityDesigned category-light domain-light[^\"]* on/);
 assert.match(onCard, /entityStateWord">פועל/);
+assert.match(onCard, /class="entityVisual"/);
+assert.match(onCard, /class="entityGauge"/);
+assert.match(onCard, /class="entityMetric"/);
+assert.match(onCard, /class="quickIcon"/);
 assert.equal(dashboard._dir(), "rtl");
 
 dashboard._boot.config.language = "en";
@@ -110,6 +114,7 @@ dashboard._boot.config.language = "he";
 
 const css = dashboard._styles();
 for (const style of styles) assert.ok(css.includes(`cardStyle-${style}`));
+for (const marker of ["v0.20 fidelity layer", "entityDesigned::before", "entityControlPreview", "mobileHomeVertical .homeDeviceRail .entityDesigned"]) assert.ok(css.includes(marker));
 for (const size of ["compact", "standard", "large"]) {
   if (size !== "standard") {
     assert.ok(css.includes(`cardDesktop-${size}`));
