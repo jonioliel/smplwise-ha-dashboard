@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.0
+
+- Added a mobile home-screen layout option that displays devices in vertically stacked categories with natural page scrolling and no horizontal device rail.
+- Made the vertical category layout the default for new and upgraded installations while keeping the former horizontal rail selectable in the visual home editor.
+- Added a responsive two-column mobile card grid, single-column expansion for complex controls, and a compact category/filter header in Hebrew and English.
+
 ## 0.17.1
 
 - Fix the Control Center desktop composition collapsing its information canvas

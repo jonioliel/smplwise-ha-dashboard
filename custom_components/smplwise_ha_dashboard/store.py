@@ -84,8 +84,16 @@ class DashboardStore:
                 # Control center is the closest match to the legacy screen.
                 self.data["home_layout"]["layout_preset"] = "control"
                 migrated = True
+            if previous_version < 10:
+                # Schema 10 makes the mobile home screen a naturally scrolling
+                # category stack. The former horizontal rail remains available
+                # as an explicit layout option in the visual editor.
+                self.data["home_layout"]["mobile_device_layout"] = (
+                    "vertical_categories"
+                )
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 9
+                self.data["config_schema_version"] = 10
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:
