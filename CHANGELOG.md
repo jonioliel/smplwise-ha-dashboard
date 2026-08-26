@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.22.1
+
+- Rebuilt the runtime device-card geometry around the approved design mockups,
+  with fixed Compact, Standard, and Large proportions shared by every entity
+  domain instead of content-dependent card heights.
+- Normalized card typography and hierarchy so category, entity name, primary
+  metric, secondary detail, state, and action stay in predictable positions in
+  Hebrew RTL and English LTR.
+- Removed duplicate binary state text and kept a single explicit state badge;
+  percentage and temperature metrics now appear only when the entity exposes a
+  meaningful value.
+- Isolated all ten visual treatments per card, preventing the selected runtime
+  style from leaking into the other design previews in the graphical editor.
+- Strengthened active-state illumination, ornaments, control surfaces, and
+  44-pixel touch actions while preserving each design's distinct appearance.
+- Added exact phone sizing at 176/204/236 px, a one-column fallback below
+  360 px, and cascade guards that prevent mixed card heights on mobile.
+- Expanded regression coverage to 360 style/size/language/state variants plus
+  room/editor parity, style isolation, RTL/LTR, and breakpoint assertions.
+
 ## 0.22.0
 
 - Rebuilt every Area screen around a single visual hierarchy: a readable glass
