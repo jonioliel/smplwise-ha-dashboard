@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.21.0
+
+- Isolated the ten device-card designs so each treatment keeps its own visual
+  structure, palette, highlights, and controls without inheriting artifacts
+  from older style layers.
+- Added Dynamic entity colors, Category colors, and Signature style colors,
+  including state-aware accents for light color, climate mode, alarms, media,
+  covers, and switches.
+- Preserved the complete quick-action control while live state updates arrive,
+  so icons, labels, accessibility state, and immediate visual feedback remain
+  intact.
+- Rebuilt the phone layout around one predictable vertical scroll owner, safe
+  areas, compact two-column category grids, and natural one-column fallback on
+  narrow screens.
+- Kept embedded Lovelace-card mode in Home Assistant's native document flow
+  while retaining a contained full-screen scroller for the sidebar panel.
+- Reduced mobile rendering cost by removing conflicting fixed backgrounds,
+  nested scrolling, and excessive per-card compositing effects at phone and
+  tablet breakpoints.
+- Added responsive room-preset behavior, camera touch-scroll safeguards,
+  reduced-motion support, keyboard focus visibility, and compact landscape
+  handling.
+- Extended the browser harness and card-style smoke coverage for all visual
+  treatments, sizes, color modes, entity colors, panel/card modes, and variable
+  entity counts; CI now runs the card-style smoke suite on every validation.
+- Migrated persisted dashboard settings to schema 12 and added the Dynamic
+  color mode as the default for new and upgraded installations.
+
 ## 0.20.0
 
 - Rebuilt device cards around a real control-card hierarchy—state badge,

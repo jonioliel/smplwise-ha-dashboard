@@ -105,8 +105,15 @@ class DashboardStore:
                     "mobile_card_size"
                 ]
                 migrated = True
+            if previous_version < 12:
+                # Schema 12 adds state-aware entity colors while retaining
+                # category and design-signature palettes as explicit options.
+                self.data["entity_card_color_mode"] = DEFAULT_CONFIG[
+                    "entity_card_color_mode"
+                ]
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 11
+                self.data["config_schema_version"] = 12
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

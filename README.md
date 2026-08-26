@@ -62,6 +62,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   Contrast, Halo Orb, Instrument Ring, Light Spine, and Lucid Minimal. Every
   style includes a stronger illuminated active state, explicit On/Off badge,
   and a dedicated action surface.
+- Three selectable card-color systems: **Dynamic** follows the entity's live
+  light color or operational state, **Category** uses consistent device-type
+  colors, and **Signature** preserves the distinctive palette of each visual
+  card treatment.
 - Independent Compact, Standard, and Large device-card sizes for desktop and
   phone. Desktop Compact deliberately reproduces the smaller phone-card
   density while retaining the selected room and whole-home layouts.
@@ -138,7 +142,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.20.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.21.0.js
 ```
 
 Resource type: **JavaScript module**.
