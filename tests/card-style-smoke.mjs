@@ -139,15 +139,14 @@ dashboard._boot.config.theme = "controlly";
 const css = dashboard._styles();
 for (const style of styles) assert.ok(css.includes(`cardStyle-${style}`));
 for (const marker of [
-  "v0.21 isolated fidelity layer",
+  "Isolated device-card fidelity layer",
   "entityDesignLayer",
   "cardColor-dynamic",
   "cameraZoomSurface.zoomed",
   "mobileHomeVertical .homeDeviceRail .entityDesigned",
   "themeControlly.themeSmplwise",
   "panelMode::before{position:fixed",
-  "panelMode .mobileNav{position:fixed",
-  "cardMode .mobileNav{position:sticky",
+  ".themeControlly.panelMode .mobileNav,.themeControlly.cardMode .mobileNav{position:fixed!important",
   "overscroll-behavior-y:contain",
   "@container home-overview",
   "grid-auto-rows:minmax(150px,auto)",
@@ -156,12 +155,55 @@ for (const marker of [
   "aspect-ratio:auto!important",
   "-webkit-mask:radial-gradient",
   "position:static!important;min-width:0!important;height:auto!important",
+  "Room experience v2",
+  "roomHeroSummary",
+  "roomControlToolbar",
+  "roomRailButtons",
+  "var(--room-floating-controls,44%)",
+  "var(--room-cinema-controls,40%)",
+  "roomPreviewV2",
+  "roomPreviewSummary",
+  "roomPreviewCategories",
+  "--room-preview-floating-controls",
+  "scroll-margin-block-start:84px",
+  "calc(100dvh - 158px)",
 ]) assert.ok(css.includes(marker), `missing CSS regression marker: ${marker}`);
+assert.ok(String(dashboard.connectedCallback).includes('window.addEventListener("scroll",this._windowScrollHandler,{passive:true,capture:true})'), "card-mode room scroll listener should capture the external document scroller");
 for (const size of ["compact", "standard", "large"]) {
   if (size !== "standard") {
     assert.ok(css.includes(`cardDesktop-${size}`));
     assert.ok(css.includes(`cardMobile-${size}`));
   }
 }
+
+const roomArea = { id: "living", name: "סלון", floor_id: "ground" };
+const roomStates = [
+  { entity_id: "light.table", state: "on", attributes: { friendly_name: "מנורת שולחן", brightness: 210 } },
+  { entity_id: "switch.fan", state: "off", attributes: { friendly_name: "מאוורר" } },
+  { entity_id: "climate.living", state: "cool", attributes: { friendly_name: "מיזוג סלון", temperature: 23, current_temperature: 24.1 } },
+  { entity_id: "cover.window", state: "open", attributes: { friendly_name: "תריס חלון", current_position: 70 } },
+];
+dashboard._boot.areas = [roomArea];
+dashboard._boot.floors = [{ id: "ground", name: "קומת כניסה" }];
+dashboard._hass.states = Object.fromEntries(roomStates.map(state => [state.entity_id, state]));
+dashboard._hass.config = { unit_system: { temperature: "°C" } };
+dashboard._entityRegistry = roomStates.map(state => ({ entity_id: state.entity_id, area_id: roomArea.id }));
+dashboard._deviceRegistry = [];
+dashboard._indexRegistries();
+dashboard._filter = "light";
+const roomHtml = dashboard._areaViewHtml(roomArea);
+for (const marker of ["roomExperience", "roomHeroSummary", "roomControlToolbar", 'data-room-filter="all"', 'data-room-scroll="previous"', 'data-room-scroll="next"']) assert.ok(roomHtml.includes(marker), `missing room markup marker: ${marker}`);
+for (const category of ["light", "switch", "climate", "cover"]) assert.ok(roomHtml.includes(`data-category-section="${category}"`), `room rail omitted ${category} while another filter was active`);
+assert.match(roomHtml, /--room-overlay-soft:/);
+
+dashboard._settingsSection = "rooms";
+dashboard._roomEditorArea = roomArea.id;
+dashboard._roomPreviewDevice = "mobile";
+const roomEditorHtml = dashboard._roomSettingsHtml();
+for (const marker of ["roomPreviewV2", "roomPreviewSummary", "roomPreviewCategories", 'data-device="mobile"', "--room-preview-floating-controls", "--room-preview-cinema-controls"]) assert.ok(roomEditorHtml.includes(marker), `room editor preview omitted ${marker}`);
+assert.match(roomEditorHtml, /data-room-preview-temperature/);
+assert.match(roomEditorHtml, /data-room-preview-info/);
+assert.match(roomEditorHtml, /class="active" aria-pressed="true" data-room-preview-device="mobile"/);
+assert.match(roomEditorHtml, /class="" aria-pressed="false" data-room-preview-device="desktop"/);
 
 console.log("card style smoke tests passed: 10 styles × 3 desktop sizes × 3 phone sizes");

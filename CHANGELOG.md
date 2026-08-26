@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.22.0
+
+- Rebuilt every Area screen around a single visual hierarchy: a readable glass
+  room summary, optional live camera, and one clean control deck without the
+  former nested dark frames or oversized empty zones.
+- Reworked Floating Islands, Control Deck, and Cinema Rail as genuinely distinct
+  desktop compositions while keeping room names, readings, and controls aligned
+  to the logical start edge in both Hebrew RTL and English LTR.
+- Replaced the narrow category columns with proper category headings above each
+  group of controls. Category tabs and previous/next buttons now stay synchronized
+  with the visible group while the desktop rail is moved.
+- Rebuilt the phone and tablet Area flow through 1100 px: natural vertical page
+  scrolling, vertically stacked categories, responsive card grids, full-width
+  camera and HVAC controls, and no horizontal entity rail.
+- Added compact low-height behavior for 1280×720 wall panels and verified the
+  room shell at phone, tablet, 900/1100 px breakpoint edges, and large desktop
+  viewports without card clipping or summary/camera overlap.
+- Replaced the schematic room editor preview with a semantic preview that mirrors
+  the real hero, summary, optional camera, category headings, card design, control
+  position, spacing, RTL/LTR alignment, and desktop/mobile flow.
+- Preserved all ten device-card designs, dynamic/category/signature colors, and
+  Compact/Standard/Large sizes across the rebuilt Area layouts, including the
+  compact phone-style card option on desktop.
+- Extended smoke coverage for the new room markup, editor preview, category rail,
+  responsive card-size matrix, state treatments, and all ten visual styles.
+
 ## 0.21.0
 
 - Isolated the ten device-card designs so each treatment keeps its own visual
