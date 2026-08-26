@@ -212,11 +212,14 @@ for (const style of styles) {
         dashboard._boot.config.language = language;
         dashboard._hass.language = language;
         dashboard._render();
-        const appClass = dashboard.shadowRoot.innerHTML.match(/<div class="([^"]*\bapp\b[^"]*)"/);
-        assert.ok(appClass, `${style}/${desktopSize}/${mobileSize}/${language}: rendered app wrapper is missing`);
-        for (const token of [`cardStyle-${style}`, `cardDesktop-${desktopSize}`, `cardMobile-${mobileSize}`]) {
-          assert.ok(appClass[1].split(/\s+/).includes(token), `${style}/${desktopSize}/${mobileSize}/${language}: wrapper omitted ${token}`);
+        const appOpening = dashboard.shadowRoot.innerHTML.match(/<div class="([^"]*\bapp\b[^"]*)"[^>]*>/);
+        assert.ok(appOpening, `${style}/${desktopSize}/${mobileSize}/${language}: rendered app wrapper is missing`);
+        const appClassTokens = appOpening[1].split(/\s+/);
+        for (const token of [`selectedCardStyle-${style}`, `cardDesktop-${desktopSize}`, `cardMobile-${mobileSize}`]) {
+          assert.ok(appClassTokens.includes(token), `${style}/${desktopSize}/${mobileSize}/${language}: wrapper omitted ${token}`);
         }
+        assert.equal(appClassTokens.some(token => token.startsWith("cardStyle-")), false, `${style}/${desktopSize}/${mobileSize}/${language}: selected style must not leak through a global cardStyle-* wrapper class`);
+        assert.ok(appOpening[0].includes(`data-card-style="${style}"`), `${style}/${desktopSize}/${mobileSize}/${language}: wrapper omitted the selected-style data contract`);
         assert.ok(dashboard.shadowRoot.innerHTML.includes(`dir="${fixture.dir}"`), `${style}/${desktopSize}/${mobileSize}/${language}: rendered direction is wrong`);
 
         for (const on of [false, true]) {
@@ -246,6 +249,8 @@ dashboard._boot.config.mobile_card_size = "compact";
 for (const style of styles) {
   const explicitlyStyled = dashboard._entityCardHtml(onLight, { style });
   assert.match(explicitlyStyled, new RegExp(`^<article class="[^"]*\\bentityStyle-${style}\\b`), `${style}: explicit per-card style should reach runtime markup`);
+  const explicitRootClasses = (explicitlyStyled.match(/^<article class="([^"]+)"/) || [])[1]?.split(/\s+/) || [];
+  assert.deepEqual(explicitRootClasses.filter(token => token.startsWith("entityStyle-")), [`entityStyle-${style}`], `${style}: runtime card must carry exactly one isolated style class`);
 }
 assert.match(dashboard._entityCardHtml(onLight, { style: "not_a_style" }), /^<article class="[^"]*\bentityStyle-neon_rim\b/, "unknown per-card style should safely fall back to configured style");
 
@@ -273,7 +278,7 @@ assert.match(dashboard.shadowRoot.innerHTML, /app themeControlly themeSmplwise/)
 dashboard._boot.config.theme = "controlly";
 
 const css = dashboard._styles();
-for (const style of styles) assert.ok(css.includes(`cardStyle-${style}`));
+for (const style of styles) assert.ok(css.includes(`entityStyle-${style}`), `${style}: per-card style selector is missing`);
 for (const marker of [
   "Device card fidelity v3",
   "entityDesignLayer",
@@ -367,6 +372,7 @@ const styleContracts = {
 for (const style of styles) {
   assert.ok(fidelityV3Css.includes(`.themeControlly.cardColor-signature .entityStyle-${style}{`), `${style}: v3 signature color token is missing`);
   assert.ok(fidelityV3Css.includes(`.themeControlly .entityStyle-${style}{`), `${style}: v3 per-card style surface is missing`);
+  assert.equal(fidelityV3Css.includes(`.cardStyle-${style} .entityDesigned`), false, `${style}: v3 styling must not depend on a global selected-style wrapper`);
   for (const contract of styleContracts[style]) assert.ok(fidelityV3Css.includes(contract), `${style}: missing distinct v3 visual contract ${contract}`);
 
   dashboard._boot.config.entity_card_style = style;
@@ -376,7 +382,17 @@ for (const style of styles) {
   assert.equal(countMatches(styleEditor, /class="entityDesignLayer"/g), styles.length * 2, `${style}: editor previews should use the production design-layer anatomy`);
   assert.equal(countMatches(styleEditor, /--entity-level:82/g), styles.length, `${style}: every editor choice should include an on-state preview`);
   assert.equal(countMatches(styleEditor, /--entity-level:0/g), styles.length, `${style}: every editor choice should include an off-state preview`);
-  for (const previewStyle of styles) assert.equal(countMatches(styleEditor, new RegExp(`\\bentityStyle-${previewStyle}\\b`, "g")), 2, `${style}: ${previewStyle} previews must carry their own production style class`);
+  for (const previewStyle of styles) {
+    assert.equal(countMatches(styleEditor, new RegExp(`\\bentityStyle-${previewStyle}\\b`, "g")), 2, `${style}: ${previewStyle} previews must carry their own production style class`);
+    const choiceStart = styleEditor.indexOf(`data-card-style-choice="${previewStyle}"`);
+    const nextChoice = styleEditor.indexOf('data-card-style-choice="', choiceStart + 1);
+    assert.ok(choiceStart >= 0, `${style}: editor choice for ${previewStyle} is missing`);
+    const choiceHtml = styleEditor.slice(choiceStart, nextChoice >= 0 ? nextChoice : styleEditor.length);
+    assert.equal(countMatches(choiceHtml, new RegExp(`\\bentityStyle-${previewStyle}\\b`, "g")), 2, `${style}: ${previewStyle} choice must own exactly its on/off preview pair`);
+    for (const otherStyle of styles.filter(candidate => candidate !== previewStyle)) {
+      assert.equal(countMatches(choiceHtml, new RegExp(`\\bentityStyle-${otherStyle}\\b`, "g")), 0, `${style}: ${previewStyle} choice leaked ${otherStyle} into its previews`);
+    }
+  }
 }
 dashboard._boot.config.entity_card_style = "neon_rim";
 
@@ -406,9 +422,11 @@ const mobileHeights = {
   standard: cssNumber(cssRule(fidelityV3Css, ".themeControlly .entityDesigned:not(.previewEntity)", "last"), "min-height", "px"),
   large: cssNumber(cssRule(fidelityV3Css, ".themeControlly.cardMobile-large .entityDesigned:not(.previewEntity)", "first"), "min-height", "px"),
 };
-assert.deepEqual(mobileHeights, { compact: 156, standard: 176, large: 210 }, "phone v3 size presets should have one deterministic geometry scale");
+assert.deepEqual(mobileHeights, { compact: 176, standard: 204, large: 236 }, "phone v3 size presets should have one deterministic geometry scale");
 const mobileCardRule = cssRule(fidelityV3Css, ".themeControlly .entityDesigned:not(.previewEntity)", "last");
-assert.ok(mobileCardRule.includes("width:100%!important") && mobileCardRule.includes("min-width:0!important") && mobileCardRule.includes("height:auto!important"), "phone cards must not retain desktop fixed geometry");
+assert.ok(mobileCardRule.includes("width:100%!important") && mobileCardRule.includes("min-width:0!important"), "phone cards must release desktop fixed width geometry");
+assert.equal(cssNumber(mobileCardRule, "height", "px"), 204, "standard phone cards should use the exact 204px height contract");
+assert.equal(cssNumber(mobileCardRule, "min-height", "px"), 204, "standard phone cards should use the exact 204px minimum-height contract");
 assert.ok(fidelityV3Css.includes("@media(max-width:359px){.themeControlly .roomExperience .serviceGrid,.themeControlly.mobileHomeVertical .railCategory{grid-template-columns:1fr!important}"), "phones up to 359px must use one card column");
 assert.ok(fidelityV3Css.includes(".themeControlly .roomExperience .serviceGrid,.themeControlly.mobileHomeVertical .railCategory{grid-template-columns:repeat(2,minmax(0,1fr))!important"), "regular phones must use the intended two-column grid without horizontal card scrolling");
 
