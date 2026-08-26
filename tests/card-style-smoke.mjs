@@ -417,16 +417,18 @@ const desktopHeights = {
   large: cssNumber(cssRule(fidelityV3Css, ".themeControlly.cardDesktop-large .entityDesigned:not(.previewEntity)", "first"), "min-height", "px"),
 };
 assert.deepEqual(desktopHeights, { compact: 176, standard: 216, large: 252 }, "desktop v3 size presets should have one deterministic geometry scale");
-const mobileHeights = {
-  compact: cssNumber(cssRule(fidelityV3Css, ".themeControlly.cardMobile-compact .entityDesigned:not(.previewEntity)", "first"), "min-height", "px"),
-  standard: cssNumber(cssRule(fidelityV3Css, ".themeControlly .entityDesigned:not(.previewEntity)", "last"), "min-height", "px"),
-  large: cssNumber(cssRule(fidelityV3Css, ".themeControlly.cardMobile-large .entityDesigned:not(.previewEntity)", "first"), "min-height", "px"),
-};
-assert.deepEqual(mobileHeights, { compact: 176, standard: 204, large: 236 }, "phone v3 size presets should have one deterministic geometry scale");
-const mobileCardRule = cssRule(fidelityV3Css, ".themeControlly .entityDesigned:not(.previewEntity)", "last");
-assert.ok(mobileCardRule.includes("width:100%!important") && mobileCardRule.includes("min-width:0!important"), "phone cards must release desktop fixed width geometry");
-assert.equal(cssNumber(mobileCardRule, "height", "px"), 204, "standard phone cards should use the exact 204px height contract");
-assert.equal(cssNumber(mobileCardRule, "min-height", "px"), 204, "standard phone cards should use the exact 204px minimum-height contract");
+const expectedMobileHeights = { compact: 176, standard: 204, large: 236 };
+const mobileHeights = {};
+for (const [size, expectedHeight] of Object.entries(expectedMobileHeights)) {
+  const selector = `.themeControlly.cardMobile-${size} .entityDesigned:not(.previewEntity)`;
+  const sizeRule = cssRule(fidelityV3Css, selector, "first");
+  assert.ok(sizeRule.includes("width:100%!important") && sizeRule.includes("min-width:0!important"), `${size}: phone cards must release desktop fixed width geometry`);
+  for (const property of ["height", "min-height", "max-height"]) {
+    assert.equal(cssNumber(sizeRule, property, "px"), expectedHeight, `${size}: phone cards should use the exact ${expectedHeight}px ${property} contract`);
+  }
+  mobileHeights[size] = cssNumber(sizeRule, "height", "px");
+}
+assert.deepEqual(mobileHeights, expectedMobileHeights, "phone v3 size presets should have one deterministic geometry scale");
 assert.ok(fidelityV3Css.includes("@media(max-width:359px){.themeControlly .roomExperience .serviceGrid,.themeControlly.mobileHomeVertical .railCategory{grid-template-columns:1fr!important}"), "phones up to 359px must use one card column");
 assert.ok(fidelityV3Css.includes(".themeControlly .roomExperience .serviceGrid,.themeControlly.mobileHomeVertical .railCategory{grid-template-columns:repeat(2,minmax(0,1fr))!important"), "regular phones must use the intended two-column grid without horizontal card scrolling");
 
