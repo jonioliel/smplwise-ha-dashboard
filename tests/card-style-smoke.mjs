@@ -43,7 +43,7 @@ assert.ok(Dashboard, "dashboard custom element should be registered");
 const dashboard = new Dashboard();
 dashboard._boot = {
   config: {
-    config_schema_version: 12,
+    config_schema_version: 13,
     language: "he",
     theme: "controlly",
     default_view: "home",
@@ -80,6 +80,49 @@ const styles = [
   "light_spine",
   "lucid_minimal",
 ];
+
+const homePresets = [
+  "home_os",
+  "bento",
+  "live_focus",
+  "floor_lens",
+  "spatial",
+  "signal",
+  "calm",
+  "room_mosaic",
+  "day_flow",
+  "modular_pro",
+];
+const homePresetMarkers = {
+  home_os: "homeOverviewBlock",
+  bento: "homeBentoCanvas",
+  live_focus: "homeLiveFocusCanvas",
+  floor_lens: "homeFloorLens",
+  spatial: "homeSpatialCanvas",
+  signal: "homeSignalCanvas",
+  calm: "homeCalmCanvas",
+  room_mosaic: "homeRoomMosaic",
+  day_flow: "homeDayFlowCanvas",
+  modular_pro: "homeModularCanvas",
+};
+for (const preset of homePresets) {
+  dashboard._boot.config.home_layout = { layout_preset: preset };
+  const layout = dashboard._homeLayoutConfig();
+  assert.equal(layout.layout_preset, preset, `${preset}: runtime should retain the selected home composition`);
+  const html = dashboard._controllyHomeHtml([], 0);
+  assert.match(html, new RegExp(`homePreset-${preset}`), `${preset}: runtime wrapper is missing`);
+  assert.ok(html.includes(homePresetMarkers[preset]), `${preset}: unique composition markup is missing`);
+}
+for (const [legacy, expected] of Object.entries({ control: "home_os", rooms: "room_mosaic", briefing: "calm", split: "signal", scenes: "spatial" })) {
+  dashboard._boot.config.home_layout = { layout_preset: legacy };
+  assert.equal(dashboard._homeLayoutConfig().layout_preset, expected, `${legacy}: legacy composition should migrate safely`);
+}
+dashboard._boot.config.home_layout = { layout_preset: "home_os" };
+dashboard._boot.config.floor_navigation = {};
+assert.equal(dashboard._floorNavigationConfig().show_sidebar_floors, false, "floor tree should be hidden by default");
+const homeEditor = dashboard._homeInfoSettingHtml();
+assert.equal((homeEditor.match(/name="homeLayoutPreset"/g) || []).length, 10, "home editor should expose all ten compositions");
+for (const preset of homePresets) assert.match(homeEditor, new RegExp(`value="${preset}"`), `${preset}: home editor option is missing`);
 
 assert.deepEqual(dashboard._cardVisualConfig().styles, styles);
 assert.deepEqual(dashboard._cardVisualConfig().colorModes, ["dynamic", "category", "signature"]);

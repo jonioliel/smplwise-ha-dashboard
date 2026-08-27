@@ -9,10 +9,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Live Home Assistant state updates.
 - English and Hebrew (including RTL).
 - Responsive desktop, tablet, and mobile layouts.
-- Five selectable whole-home compositions in the graphical editor: **A ·
-  Control Center**, **B · Home by Rooms**, **C · Daily Briefing**, **D · Split
-  Operations**, and **E · Scenes & Actions**. Every composition uses live Area,
-  entity, alarm, weather, scene, and script data with RTL/LTR-aware placement.
+- Ten selectable Liquid Glass whole-home compositions in the graphical editor:
+  **Home OS, Bento, Live Focus, Floor Lens, Spatial, Signal, Calm, Room Mosaic,
+  Day Flow, and Modular Pro**. Every composition uses live Area, floor, entity,
+  alarm, weather, scene, and script data with RTL/LTR-aware placement.
 - Three purpose-built room layouts in the graphical room editor: **C · Floating
   Islands**, **D · Control Deck**, and **E · Cinema Rail**. Each has a dedicated
   desktop and phone composition, while room names and data use logical start
@@ -41,9 +41,11 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   collapsible group with configurable default and remembered expansion state.
 - A compact single-row floor/Area navigator on the whole-home screen keeps the
   **Active / All** switch and device controls visible without page scrolling.
-- One continuous horizontal device rail on the home view. It can switch between
-  **Active** and **All**, continues from one editable category to the next, and
-  keeps the category tabs synchronized while the rail is swiped or scrolled.
+- One continuous horizontal device rail on desktop. On phones the default is a
+  natural vertical page with devices grouped by category and no horizontal
+  device scrolling; the former horizontal phone rail remains selectable. Both
+  modes can switch between **Active** and **All** and keep category navigation
+  synchronized with the visible section.
 - Dynamic category sections in every Area. Empty room categories and filters
   are omitted automatically.
 - Capability-aware HVAC controls for target temperature or temperature range,
@@ -142,7 +144,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.22.1.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.23.0.js
 ```
 
 Resource type: **JavaScript module**.

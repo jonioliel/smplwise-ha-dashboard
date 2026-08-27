@@ -112,8 +112,39 @@ class DashboardStore:
                     "entity_card_color_mode"
                 ]
                 migrated = True
+            if previous_version < 13:
+                # Schema 13 expands the whole-home editor from five legacy
+                # compositions to ten Liquid Glass layouts. Preserve the
+                # closest visual intent when migrating existing dashboards.
+                aliases = {
+                    "control": "home_os",
+                    "rooms": "room_mosaic",
+                    "briefing": "calm",
+                    "split": "signal",
+                    "scenes": "spatial",
+                }
+                presets = {
+                    "home_os",
+                    "bento",
+                    "live_focus",
+                    "floor_lens",
+                    "spatial",
+                    "signal",
+                    "calm",
+                    "room_mosaic",
+                    "day_flow",
+                    "modular_pro",
+                }
+                current = self.data["home_layout"].get("layout_preset")
+                self.data["home_layout"]["layout_preset"] = aliases.get(
+                    current, current if current in presets else "home_os"
+                )
+                self.data["floor_navigation"].setdefault(
+                    "show_sidebar_floors", False
+                )
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 12
+                self.data["config_schema_version"] = 13
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

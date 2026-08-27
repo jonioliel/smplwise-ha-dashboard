@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.23.0
+
+- Added all ten approved Liquid Glass whole-home compositions to the runtime
+  and graphical home editor: Home OS, Bento, Live Focus, Floor Lens, Spatial,
+  Signal, Calm, Room Mosaic, Day Flow, and Modular Pro.
+- Connected every composition to live Home Assistant Areas, floors, activity
+  state, cameras, alarms, weather, Shabbat information, and controllable entity
+  cards; no design is a static demonstration.
+- Added purpose-built compact information-canvas arrangements for narrow
+  desktop columns so time, weather, Shabbat, and alarm widgets remain readable
+  without overlap while Home OS continues to honor the full graphical canvas.
+- Made the optional floor tree hidden by default and added a management switch
+  to restore it. The compact floor/Area navigator remains available on the
+  whole-home screen, with floor labels visually stronger than room labels.
+- Preserved natural vertical category scrolling as the default phone behavior
+  across all ten compositions, with no page-level horizontal overflow.
+- Migrated legacy five-layout installations to their closest new composition,
+  advanced stored settings to schema 13, and expanded the harness and smoke
+  suite to cover all ten runtime/editor presets.
+
 ## 0.22.1
 
 - Rebuilt the runtime device-card geometry around the approved design mockups,
