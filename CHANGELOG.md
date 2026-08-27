@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.23.1
+
+- Fixed the whole-home **Active** filter so climate entities configured for
+  cooling or heating are shown only while `hvac_action` reports real activity;
+  idle HVAC entities no longer appear as active.
+- Unified activity detection across device cards, category counts, the active
+  summary, room/floor status, and live state updates so the displayed cards and
+  counters cannot disagree.
+- Added a hardened active-only visibility contract for desktop rails and the
+  mobile vertical category layout, including immediate hide/show updates when
+  an entity changes state.
+- Added automated coverage for idle versus cooling HVAC entities, media session
+  state, active-category totals, and hidden inactive cards.
+
 ## 0.23.0
 
 - Added all ten approved Liquid Glass whole-home compositions to the runtime

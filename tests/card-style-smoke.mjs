@@ -176,6 +176,33 @@ assert.equal(countMatches(onCard, />פועל</g), 1, "binary state should appear
 for (const part of ["entityDesignLayer", "designSheen", "designRim", "designSplit", "designOrb", "designScale", "designNeedle", "designToggle", "designSpine"]) assert.match(onCard, new RegExp(`class="${part}`));
 assert.equal(dashboard._dir(), "rtl");
 
+const idleClimate = {
+  entity_id: "climate.bedroom",
+  state: "cool",
+  attributes: { friendly_name: "מיזוג חדר שינה", hvac_action: "idle", temperature: 22 },
+};
+const coolingClimate = {
+  ...idleClimate,
+  entity_id: "climate.living_room",
+  attributes: { ...idleClimate.attributes, friendly_name: "מיזוג סלון", hvac_action: "cooling" },
+};
+const pausedPlayer = {
+  entity_id: "media_player.television",
+  state: "paused",
+  attributes: { friendly_name: "טלוויזיה" },
+};
+assert.equal(dashboard._homeEntityVisible(idleClimate), false, "a climate entity in idle must not be treated as active");
+assert.equal(dashboard._homeEntityVisible(coolingClimate), true, "a climate entity that is actually cooling must be active");
+assert.equal(dashboard._homeEntityVisible(pausedPlayer), true, "a paused media session should remain active");
+assert.match(dashboard._entityCardHtml(idleClimate, { activeOnly: true }), /data-active-visible="false"[^>]*style="[^"]*display:none"[^>]*data-active-only[^>]*hidden/);
+assert.doesNotMatch(dashboard._entityCardHtml(idleClimate), /\bon\b/);
+assert.match(dashboard._entityCardHtml(coolingClimate), /class="[^"]*\bon\b/);
+dashboard._homeDeviceMode = "active";
+const activeClimateRail = dashboard._homeDeviceRailHtml([idleClimate, coolingClimate]);
+assert.match(activeClimateRail, /class="homeDeviceRail activeOnly"/);
+assert.match(activeClimateRail, /data-category-count>1</);
+assert.match(activeClimateRail, /data-entity-card="climate\.bedroom"[^>]*display:none[^>]*hidden/);
+
 const languageFixtures = {
   he: {
     name: "מנורת התקרה המרכזית הארוכה במיוחד במסדרון הכניסה הראשי",
