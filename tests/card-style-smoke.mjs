@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 const countMatches = (value, expression) => (String(value).match(expression) || []).length;
 const cssRule = (source, selector, occurrence = "last") => {
@@ -43,7 +44,7 @@ assert.ok(Dashboard, "dashboard custom element should be registered");
 const dashboard = new Dashboard();
 dashboard._boot = {
   config: {
-    config_schema_version: 13,
+    config_schema_version: 14,
     language: "he",
     theme: "controlly",
     default_view: "home",
@@ -93,6 +94,18 @@ const homePresets = [
   "day_flow",
   "modular_pro",
 ];
+const informationPanelStyles = [
+  "liquid_horizon",
+  "home_chronograph",
+  "system_atlas",
+  "light_ribbon",
+  "home_pulse",
+  "solar_orbit",
+  "command_rail",
+  "intelligence_layers",
+  "data_constellation",
+  "cinematic_intelligence",
+];
 const homePresetMarkers = {
   home_os: "homeOverviewBlock",
   bento: "homeBentoCanvas",
@@ -123,6 +136,142 @@ assert.equal(dashboard._floorNavigationConfig().show_sidebar_floors, false, "flo
 const homeEditor = dashboard._homeInfoSettingHtml();
 assert.equal((homeEditor.match(/name="homeLayoutPreset"/g) || []).length, 10, "home editor should expose all ten compositions");
 for (const preset of homePresets) assert.match(homeEditor, new RegExp(`value="${preset}"`), `${preset}: home editor option is missing`);
+
+assert.equal((homeEditor.match(/name="informationPanelStyle"/g) || []).length, 11, "home editor should expose ten premium information-panel styles plus the custom-canvas restore choice");
+assert.equal((homeEditor.match(/name="informationPanelStyle" value="custom_canvas"/g) || []).length, 1, "home editor should expose exactly one custom-canvas restore choice");
+for (const style of informationPanelStyles) assert.match(homeEditor, new RegExp(`value="${style}"`), `${style}: information-panel choice is missing`);
+assert.match(homeEditor, /class="field informationColumnsField informationControlUnavailable"[^>]*>[\s\S]*?id="cfgInfoColumns"[^>]*disabled/, "premium compositions must not expose a misleading editable column count");
+
+dashboard._hass.states = {
+  "weather.home": { entity_id: "weather.home", state: "sunny", last_updated: "2026-08-28T08:00:00Z", attributes: { friendly_name: "Weather", temperature: 28, temperature_unit: "°C" } },
+  "sensor.parasha": { entity_id: "sensor.parasha", state: "Re'eh", last_updated: "2026-08-28T08:00:00Z", attributes: { friendly_name: "Weekly portion" } },
+  "sensor.candle": { entity_id: "sensor.candle", state: "18:52", last_updated: "2026-08-28T08:00:00Z", attributes: { friendly_name: "Candle lighting" } },
+  "sensor.havdalah": { entity_id: "sensor.havdalah", state: "19:46", last_updated: "2026-08-28T08:00:00Z", attributes: { friendly_name: "Havdalah" } },
+  "sensor.energy_total": { entity_id: "sensor.energy_total", state: "12.4", last_updated: "2026-08-28T08:00:00Z", attributes: { friendly_name: "Energy", unit_of_measurement: "kWh" } },
+  "alarm_control_panel.home": { entity_id: "alarm_control_panel.home", state: "disarmed", last_updated: "2026-08-28T08:00:00Z", attributes: { friendly_name: "Home alarm" } },
+};
+dashboard._boot.config.home_info = {
+  show_weather: true,
+  weather_entity_id: "weather.home",
+  show_parasha: true,
+  parasha_entity_id: "sensor.parasha",
+  show_shabbat: true,
+  candle_lighting_entity_id: "sensor.candle",
+  havdalah_entity_id: "sensor.havdalah",
+  show_alarms: true,
+  alarm_entity_ids: ["alarm_control_panel.home"],
+  custom_widgets: [{ id: "custom-energy", type: "entity", entity_id: "sensor.energy_total", label: "Energy", visible: true }],
+};
+dashboard._homeWidgetDraft = null;
+
+for (const language of ["he", "en"]) {
+  dashboard._boot.config.language = language;
+  for (const style of informationPanelStyles) {
+    dashboard._boot.config.home_layout = { layout_preset: "home_os", information_panel_style: style };
+    assert.equal(dashboard._homeLayoutConfig().information_panel_style, style, `${language}/${style}: configured style should be retained`);
+    const infoHtml = dashboard._homeInfoHtml();
+    assert.match(infoHtml, new RegExp(`\\binfoPremium-${style}\\b`), `${language}/${style}: runtime class is missing`);
+    assert.match(infoHtml, new RegExp(`data-information-style="${style}"`), `${language}/${style}: runtime style identity is missing`);
+    assert.match(infoHtml, new RegExp(`dir="${language === "he" ? "rtl" : "ltr"}"`), `${language}/${style}: logical direction is wrong`);
+    assert.match(infoHtml, /data-home-time/);
+    assert.match(infoHtml, /data-home-date/);
+    assert.match(infoHtml, /data-entity="alarm_control_panel\.home"/);
+    assert.match(infoHtml, /data-home-widget="custom-energy"/);
+  }
+  const localizedPicker = dashboard._homeInfoSettingHtml();
+  assert.match(localizedPicker, language === "he" ? /אופק נוזלי/ : /Liquid Horizon/);
+  assert.match(localizedPicker, language === "he" ? /מודיעין קולנועי/ : /Cinematic Intelligence/);
+  assert.match(localizedPicker, /name="informationPanelStyle" value="custom_canvas"/, "the saved custom canvas must always remain selectable");
+  assert.match(localizedPicker, /data-home-canvas-mode="inactive"/, "the canvas editor must explain when a premium style is active");
+  assert.match(localizedPicker, /for="informationStyleCustomCanvas"/, "the canvas editor must provide a direct restore control");
+}
+
+dashboard._boot.config.language = "he";
+dashboard._boot.config.home_layout = { layout_preset: "home_os", information_panel_style: "not-a-style" };
+assert.equal(dashboard._homeLayoutConfig().information_panel_style, "liquid_horizon", "unknown information-panel styles should fall back safely");
+assert.match(dashboard._homeInfoHtml(), /infoPremium-liquid_horizon/);
+
+dashboard._boot.config.home_layout = {
+  layout_preset: "home_os",
+  information_panel_style: "custom_canvas",
+  info_widgets: [{ id: "clock", type: "clock", column: 3, row: 2, width: 5, height: 2, visible: true }],
+};
+const customCanvasHtml = dashboard._homeInfoHtml();
+assert.match(customCanvasHtml, /\binfoCanvasCustom\b/);
+assert.match(customCanvasHtml, /data-information-style="custom_canvas"/);
+assert.doesNotMatch(customCanvasHtml, /infoPremiumDecor/);
+const customCanvasPicker = dashboard._homeInfoSettingHtml();
+assert.match(customCanvasPicker, /data-information-style-legacy/);
+assert.match(customCanvasPicker, /קנבס מותאם אישית/);
+assert.match(customCanvasPicker, /name="informationPanelStyle" value="custom_canvas"[^>]*checked/);
+assert.match(customCanvasPicker, /data-home-canvas-mode="active"/);
+assert.match(customCanvasPicker, /הקנבס המותאם פעיל/);
+assert.match(customCanvasPicker, /class="homeCanvasInactiveHelp" hidden/, "active custom canvas should hide the premium-mode help without removing it from the live editor DOM");
+assert.equal((customCanvasPicker.match(/name="informationPanelStyle"[^>]*checked/g) || []).length, 1, "the restored custom canvas must be the one clearly selected style");
+assert.doesNotMatch(customCanvasPicker, /id="cfgInfoColumns"[^>]*disabled/, "the custom canvas must retain its editable column count");
+
+const makeClassList = initial => {
+  const values = new Set(initial);
+  return {
+    toggle(name, enabled) { if (enabled) values.add(name); else values.delete(name); },
+    contains(name) { return values.has(name); },
+  };
+};
+const studioClasses = makeClassList(["canvasModeInactive"]);
+const modeClasses = makeClassList([]);
+const modeControl = { classList: modeClasses, innerHTML: "" };
+const inactiveHelp = { hidden: false, textContent: "" };
+const canvasStudio = {
+  classList: studioClasses,
+  dataset: { homeCanvasMode: "inactive" },
+  querySelector(selector) {
+    if (selector === ".homeCanvasModeControl") return modeControl;
+    if (selector === ".homeCanvasInactiveHelp") return inactiveHelp;
+    return null;
+  },
+};
+const canvasModeQuerySelector = dashboard.shadowRoot.querySelector;
+dashboard.shadowRoot.querySelector = selector => selector === ".homeCanvasStudio" ? canvasStudio : null;
+dashboard._syncHomeCanvasMode("custom_canvas");
+assert.equal(canvasStudio.dataset.homeCanvasMode, "active", "selecting custom canvas should activate the editor immediately");
+assert.ok(studioClasses.contains("canvasModeActive"));
+assert.ok(!studioClasses.contains("canvasModeInactive"));
+assert.ok(modeClasses.contains("active"));
+assert.match(modeControl.innerHTML, /הקנבס המותאם פעיל/);
+assert.equal(inactiveHelp.hidden, true);
+dashboard._syncHomeCanvasMode("solar_orbit");
+assert.equal(canvasStudio.dataset.homeCanvasMode, "inactive", "selecting a premium panel should mark the canvas editor inactive immediately");
+assert.ok(!studioClasses.contains("canvasModeActive"));
+assert.ok(studioClasses.contains("canvasModeInactive"));
+assert.ok(!modeClasses.contains("active"));
+assert.match(modeControl.innerHTML, /הצג את הקנבס המותאם/);
+assert.equal(inactiveHelp.hidden, false);
+assert.match(inactiveHelp.textContent, /השינויים בעורך נשמרים/);
+dashboard.shadowRoot.querySelector = canvasModeQuerySelector;
+
+const originalQuerySelector = dashboard.shadowRoot.querySelector;
+const originalPersistConfig = dashboard._persistConfig;
+dashboard._persistConfig = async () => {};
+dashboard.shadowRoot.querySelector = selector => selector === 'input[name="informationPanelStyle"]:checked' ? { value: "solar_orbit" } : null;
+await dashboard._saveHomeInfo();
+assert.equal(dashboard._boot.config.config_schema_version, 14, "saving the information panel must retain schema 14");
+assert.equal(dashboard._boot.config.home_layout.information_panel_style, "solar_orbit", "selected information-panel style must be persisted");
+dashboard.shadowRoot.querySelector = selector => selector === 'input[name="informationPanelStyle"]:checked' ? { value: "custom_canvas" } : null;
+await dashboard._saveHomeInfo();
+assert.equal(dashboard._boot.config.home_layout.information_panel_style, "custom_canvas", "a premium style must be able to restore the saved custom canvas");
+dashboard.shadowRoot.querySelector = () => null;
+await dashboard._saveHomeInfo();
+assert.equal(dashboard._boot.config.home_layout.information_panel_style, "custom_canvas", "saving without a selection must preserve the restored custom canvas");
+dashboard.shadowRoot.querySelector = originalQuerySelector;
+dashboard._persistConfig = originalPersistConfig;
+
+dashboard._boot.config.home_info.custom_widgets = [{ id: "custom-energy", type: "entity", entity_id: "sensor.energy_total", visible: true }];
+const signatureBefore = dashboard._stateSignature(dashboard._hass);
+dashboard._hass.states["sensor.energy_total"] = { ...dashboard._hass.states["sensor.energy_total"], state: "13.1", last_updated: "2026-08-28T08:01:00Z" };
+const signatureAfter = dashboard._stateSignature(dashboard._hass);
+assert.notEqual(signatureBefore, signatureAfter, "configured custom information entities must participate in live-state rendering");
+
+dashboard._boot.config.home_layout = { layout_preset: "home_os", information_panel_style: "liquid_horizon" };
 
 assert.deepEqual(dashboard._cardVisualConfig().styles, styles);
 assert.deepEqual(dashboard._cardVisualConfig().colorModes, ["dynamic", "category", "signature"]);
@@ -345,10 +494,63 @@ assert.match(dashboard.shadowRoot.innerHTML, /app themeControlly themeGlass/);
 dashboard._boot.config.theme = "smplwise";
 dashboard._render();
 assert.match(dashboard.shadowRoot.innerHTML, /app themeControlly themeSmplwise/);
+assert.match(dashboard.shadowRoot.innerHTML, /infoPremium-liquid_horizon/, "premium information layouts must render in the SmplWise theme as well as Controlly");
+dashboard._boot.config.home_layout.mobile_device_layout = "horizontal_rail";
+dashboard._render();
+assert.match(dashboard.shadowRoot.innerHTML, /mobileHomeRail informationPremiumPanel/, "the mobile horizontal rail must expose the premium parent-height contract");
+dashboard._boot.config.home_layout.mobile_device_layout = "vertical_categories";
 dashboard._boot.config.theme = "controlly";
 
 const css = dashboard._styles();
 for (const style of styles) assert.ok(css.includes(`entityStyle-${style}`), `${style}: per-card style selector is missing`);
+for (const style of informationPanelStyles) {
+  assert.ok(css.includes(`infoPremium-${style}`), `${style}: premium information-panel CSS is missing`);
+  assert.ok(css.includes(`infoMini-${style}`), `${style}: visual-editor preview CSS is missing`);
+  assert.ok(css.includes(`infoPreview-${style}`), `${style}: home-editor preview CSS is missing`);
+}
+const premiumSpecificityPrefix = ".themeControlly .homeInfoCanvas.homeInfoCanvas.infoPremium-";
+const premiumComputedRules = informationPanelStyles.map(style => {
+  const marker = `${premiumSpecificityPrefix}${style}{background:`;
+  const start = css.indexOf(marker);
+  assert.notEqual(start, -1, `${style}: runtime background must outrank the generic premium selector`);
+  const end = css.indexOf("}", start);
+  assert.ok(end > start, `${style}: high-specificity runtime background rule is malformed`);
+  return css.slice(start, end + 1);
+});
+assert.equal(new Set(premiumComputedRules).size, informationPanelStyles.length, "all ten premium styles must retain distinct computed backgrounds");
+for (const style of informationPanelStyles.filter(style => style !== "liquid_horizon")) {
+  assert.ok(css.includes(`${premiumSpecificityPrefix}${style} .homeClockMain{`), `${style}: desktop clock placement must outrank the generic premium grid`);
+}
+assert.ok(css.includes(`${premiumSpecificityPrefix}liquid_horizon .homeCanvas-candle{`), "liquid horizon must retain its deliberate desktop grid override");
+assert.ok(css.includes(`${premiumSpecificityPrefix}system_atlas{grid-template-rows:repeat(4,minmax(54px,auto))!important;grid-auto-rows:minmax(58px,auto)!important;height:auto!important`), "system atlas must expose an explicit expandable custom-entity lane");
+assert.ok(css.includes('.homeInfoCanvas.homeInfoCanvas[class*="infoPremium-"]:has(>.homeCanvas-entity){height:auto!important;grid-auto-rows:minmax(58px,auto)!important;overflow:visible!important'), "premium panels with custom entities must grow instead of clipping implicit rows");
+assert.ok(css.includes(`${premiumSpecificityPrefix}system_atlas:has(>.homeCanvas-entity){grid-template-rows:repeat(4,minmax(50px,auto))!important;grid-auto-rows:minmax(52px,auto)!important;padding-block:`), "system atlas must compact its desktop rows enough to contain the custom-entity lane");
+const genericPremiumCustomIndex = css.indexOf('.homeInfoCanvas.homeInfoCanvas[class*="infoPremium-"]:has(>.homeCanvas-entity){height:auto!important;grid-auto-rows:minmax(58px,auto)!important;overflow:visible!important');
+const desktopPremiumCustomScrollIndex = css.indexOf('@media(min-width:721px){.themeControlly .homeInfoCanvas.homeInfoCanvas[class*="infoPremium-"]:has(>.homeCanvas-entity){height:100%!important;min-height:0!important;max-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important');
+const atlasCustomScrollIndex = css.indexOf('.homeInfoCanvas.homeInfoCanvas.infoPremium-system_atlas.infoPremium-system_atlas:has(>.homeCanvas-entity){grid-template-rows:repeat(4,minmax(50px,auto))!important;grid-auto-rows:minmax(52px,auto)!important;height:100%!important;min-height:0!important;max-height:100%!important');
+assert.ok(genericPremiumCustomIndex >= 0 && desktopPremiumCustomScrollIndex > genericPremiumCustomIndex, "the desktop premium scrollport must follow and override natural mobile custom-widget growth");
+assert.ok(atlasCustomScrollIndex > desktopPremiumCustomScrollIndex, "the stronger System Atlas scroll contract must follow and override the generic desktop custom-widget scrollport");
+assert.ok(css.slice(atlasCustomScrollIndex, css.indexOf("}", atlasCustomScrollIndex)).includes('overflow-y:auto!important'), "large System Atlas custom-widget collections must own a vertical scrollport");
+assert.ok(css.includes('.homeInfoCanvas.homeInfoCanvas[class*="infoPremium-"]:not(.infoPremium-command_rail) .homeAlarmDock{overflow-x:auto!important;overflow-y:hidden!important'), "desktop alarm collections must remain horizontally reachable");
+assert.ok(css.includes('.homeInfoCanvas.homeInfoCanvas.infoPremium-command_rail .homeAlarmDock{overflow-x:hidden!important;overflow-y:auto!important'), "the vertical command rail must keep arbitrary alarms reachable");
+assert.ok(css.includes('.homeInfoCanvas[class*="infoPremium-"][dir="rtl"]'), "premium information panels need an explicit RTL contract");
+assert.ok(css.includes('.homeInfoCanvas[class*="infoPremium-"][dir="ltr"]'), "premium information panels need an explicit LTR contract");
+assert.ok(css.includes('.homeInfoCanvas.homeInfoCanvas[class*="infoPremium-"][dir="rtl"]{direction:rtl!important;text-align:right!important'), "an explicit RTL canvas must outrank an LTR app ancestor");
+assert.ok(css.includes('.homeInfoCanvas.homeInfoCanvas[class*="infoPremium-"][dir="ltr"]{direction:ltr!important;text-align:left!important'), "an explicit LTR canvas must outrank an RTL app ancestor");
+assert.ok(css.includes('[data-home-time]{direction:ltr!important;unicode-bidi:isolate!important'), "time digits need isolated LTR rendering");
+assert.ok(css.includes('[data-home-date]{direction:inherit!important;unicode-bidi:plaintext!important;text-align:start!important'), "localized dates need logical-direction rendering");
+assert.ok(css.includes('@media(max-width:720px){.informationStylePicker'), "the premium picker needs a phone layout");
+assert.ok(css.includes('.homeInfoCanvas[class*="infoPremium-"]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))'), "premium information panels need a responsive two-column phone layout");
+assert.ok(css.includes('.homeInfoCanvas[class*="infoPremium-"] .homeAlarmDock{grid-column:1/-1!important;grid-row:auto!important;display:grid!important'), "alarm controls need a non-scrolling mobile grid");
+assert.ok(css.includes('height:auto!important;overflow:visible!important;gap:7px!important'), "mobile alarm controls must not use an internal scrolling rail");
+assert.ok(css.includes('.informationStyleCustomChoice{grid-column:1/-1}'), "the custom-canvas restore choice needs an explicit visual treatment");
+assert.ok(css.includes('.homeCanvasStudio.canvasModeInactive'), "the canvas editor must visually distinguish inactive premium mode");
+assert.ok(css.includes('.homeInfoCanvas.homeInfoCanvas[class*="infoPremium-"]{padding:clamp(10px,var(--home-overview-padding,18px),36px)!important}'), "premium panels must honor the saved overview padding");
+assert.ok(css.includes('--premium-text-align:start') && css.includes('--premium-text-align:center') && css.includes('--premium-text-align:end'), "premium panels must honor all logical text alignments");
+assert.ok(css.includes('zoom:var(--home-clock-scale,1)!important') && css.includes('zoom:var(--home-info-scale,1)!important'), "premium panels must honor independent clock and information scaling");
+assert.ok(css.includes('.themeControlly.mobileHomeRail.informationPremiumPanel .content.view-home{overflow-y:auto!important'), "premium information must make the horizontal-rail phone page vertically scrollable");
+assert.ok(css.includes('.themeControlly.mobileHomeRail.informationPremiumPanel .homeOverviewBlock{flex:0 0 auto!important;height:auto!important;min-height:350px!important;overflow:visible!important'), "the premium information parent must not clip its phone-height content");
+assert.ok(css.includes('.themeControlly.mobileHomeRail.informationPremiumPanel .homeBentoCanvas'), "premium information must release nested preset height constraints on phones");
 for (const marker of [
   "Device card fidelity v3",
   "entityDesignLayer",
@@ -570,4 +772,24 @@ for (const preset of ["floating", "deck", "cinema"]) {
 }
 assert.equal(roomParityCases, 3 * 2 * 2, "all room presets, positions, and preview devices should be checked");
 
-console.log(`card style smoke tests passed: ${exhaustiveCardCases} card variants + ${roomParityCases} room/editor parity cases`);
+const frontendSource = readFileSync(new URL("../custom_components/smplwise_ha_dashboard/frontend/smplwise-ha-dashboard.js", import.meta.url), "utf8");
+const constSource = readFileSync(new URL("../custom_components/smplwise_ha_dashboard/const.py", import.meta.url), "utf8");
+const storeSource = readFileSync(new URL("../custom_components/smplwise_ha_dashboard/store.py", import.meta.url), "utf8");
+const harnessSource = readFileSync(new URL("./dashboard-harness.html", import.meta.url), "utf8");
+assert.ok(frontendSource.includes('desktop_overview_min:Math.max(200,Math.min(440') && frontendSource.includes('mobile_overview_min:Math.max(150,Math.min(280'), "editor save clamps must match the visible desktop and mobile height ranges");
+assert.doesNotMatch(frontendSource, /config_schema_version\s*:\s*13\b/, "frontend save paths must never downgrade schema 14");
+assert.doesNotMatch(harnessSource, /config_schema_version\s*:\s*13\b/, "dashboard harness must exercise schema 14");
+assert.match(harnessSource, /config_schema_version:14/);
+assert.match(harnessSource, /information_panel_style:harnessInfoStyle/);
+assert.match(harnessSource, /harnessParams\.get\("infoStyle"\)/);
+assert.match(constSource, /"config_schema_version": 14/);
+assert.match(constSource, /"information_panel_style": "liquid_horizon"/);
+assert.match(storeSource, /if previous_version < 14:/);
+assert.match(storeSource, /"custom_canvas"\s+if customized_canvas/);
+assert.match(storeSource, /"info_widgets"/);
+assert.match(storeSource, /stored_info\.get\("custom_widgets"\)/);
+for (const key of ["info_scale", "info_alignment", "info_columns", "info_order", "info_canvas_direction", "info_canvas_rows", "info_canvas_gap", "clock_scale", "overview_padding"]) {
+  assert.match(storeSource, new RegExp(`"${key}"`), `schema 14 migration must preserve a v13 ${key} canvas customization`);
+}
+
+console.log(`card style smoke tests passed: ${exhaustiveCardCases} card variants + ${roomParityCases} room/editor parity cases + ${informationPanelStyles.length * 2} information-panel locale/style cases`);

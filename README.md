@@ -22,8 +22,13 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - A whole-home information surface centered on local date/time, with optional
   current weather plus weekly Torah portion, candle-lighting, and Havdalah
   values read from Home Assistant entities.
+- Ten independent premium information-panel styles in **Manage → Home
+  screen**: Liquid Horizon, Home Chronograph, System Atlas, Light Ribbon, Home
+  Pulse, Solar Orbit, Command Rail, Intelligence Layers, Data Constellation,
+  and Cinematic Intelligence. Each style supports live data, Hebrew RTL,
+  English LTR, desktop, tablet, and natural-scroll phone layouts.
 - A graphical whole-home editor with live desktop and phone previews, block
-  ordering, compact/focus information styles, grid/list activity layouts,
+  ordering, premium information styles, grid/list activity layouts,
   widget and clock scaling, navigation visibility, internal spacing, and
   independent desktop/mobile card sizing. Activity totals are direct shortcuts
   to their category in the continuous device rail.
@@ -144,7 +149,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.23.1.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.24.0.js
 ```
 
 Resource type: **JavaScript module**.

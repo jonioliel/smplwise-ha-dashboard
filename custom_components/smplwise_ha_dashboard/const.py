@@ -4,12 +4,12 @@ DOMAIN = "smplwise_ha_dashboard"
 PANEL_URL = "smplwise-ha-dashboard"
 PANEL_TITLE = "SmplWise"
 PANEL_ICON = "mdi:home-lightning-bolt-outline"
-FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.23.1.js"
+FRONTEND_URL = "/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.24.0.js"
 STORAGE_KEY = "smplwise_ha_dashboard.config"
 STORAGE_VERSION = 1
 
 DEFAULT_CONFIG = {
-    "config_schema_version": 13,
+    "config_schema_version": 14,
     "language": "auto",
     "theme": "smplwise",
     "default_view": "home",
@@ -37,6 +37,7 @@ DEFAULT_CONFIG = {
     },
     "home_layout": {
         "layout_preset": "home_os",
+        "information_panel_style": "liquid_horizon",
         "show_activity_overview": True,
         "activity_position": "end",
         "activity_width": 300,

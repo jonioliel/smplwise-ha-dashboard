@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.24.0
+
+- Added ten independent premium information-panel designs: Liquid Horizon,
+  Home Chronograph, System Atlas, Light Ribbon, Home Pulse, Solar Orbit,
+  Command Rail, Intelligence Layers, Data Constellation, and Cinematic
+  Intelligence.
+- Added a visual bilingual selector with live previews in the graphical home
+  editor. Information-panel style can now be combined with any whole-home
+  layout instead of being coupled to it.
+- Preserved existing custom information-canvas coordinates, sizes, and custom
+  entity widgets during the schema 14 migration; selecting a premium style
+  changes presentation without deleting the saved canvas data.
+- Added live state tracking for custom information entities and kept weather,
+  weekly portion, Shabbat times, and selected alarms live in every style.
+- Added dedicated Hebrew RTL, English LTR, desktop, tablet, and natural-scroll
+  mobile layouts, including non-scrolling alarm grids on narrow screens.
+- Expanded automated coverage for all ten styles in both languages, safe
+  fallback and migration behavior, saved selection, custom widgets, and
+  responsive rendering contracts.
+
 ## 0.23.1
 
 - Fixed the whole-home **Active** filter so climate entities configured for

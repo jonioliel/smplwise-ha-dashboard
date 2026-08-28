@@ -143,8 +143,39 @@ class DashboardStore:
                     "show_sidebar_floors", False
                 )
                 migrated = True
+            if previous_version < 14:
+                # Schema 14 adds an independent visual treatment for the
+                # information panel. Keep the legacy renderer selected when
+                # an installation has moved/resized widgets or added custom
+                # entities; coordinates and custom widgets are never removed.
+                stored_layout = stored.get("home_layout") or {}
+                stored_info = stored.get("home_info") or {}
+                canvas_setting_keys = (
+                    "info_scale",
+                    "info_alignment",
+                    "info_columns",
+                    "info_order",
+                    "info_canvas_direction",
+                    "info_canvas_rows",
+                    "info_canvas_gap",
+                    "info_widgets",
+                    "clock_scale",
+                    "overview_padding",
+                )
+                customized_canvas = bool(stored_info.get("custom_widgets")) or any(
+                    key in stored_layout
+                    and stored_layout.get(key)
+                    != DEFAULT_CONFIG["home_layout"].get(key)
+                    for key in canvas_setting_keys
+                )
+                self.data["home_layout"]["information_panel_style"] = (
+                    "custom_canvas"
+                    if customized_canvas
+                    else DEFAULT_CONFIG["home_layout"]["information_panel_style"]
+                )
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 13
+                self.data["config_schema_version"] = 14
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:
