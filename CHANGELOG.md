@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.25.0
+
+- Added ten new premium whole-home compositions alongside the ten existing
+  SmplWise Core layouts: Cinematic Bridge, Orbital Home, Split Prism, Status
+  Lanes, Living Floors, Live Map, Editorial Day, Climate Lens, Command Matrix,
+  and Scene Panorama.
+- Organized the graphical home-layout picker into **SmplWise Core**,
+  **Premium Command**, and **Premium Home Experience** categories, with live
+  desktop and phone previews and no loss of saved layout settings when moving
+  between designs.
+- Connected every premium composition to live Home Assistant Areas, floors,
+  active entity state, scenes/scripts, climate, alarms, weather, weekly Torah
+  portion, and Shabbat times. Controls continue to use the existing secured
+  dashboard action paths.
+- Added dedicated Hebrew RTL and English LTR geometry for all ten designs,
+  including an RTL-safe orbital layout, responsive tablet adaptation, and the
+  natural vertical category flow on phones.
+- Preserved the Active/All device filter across all 20 layouts and added
+  regression coverage for category assignment, normalized saved presets,
+  schema-14 round trips, responsive marker contracts, and active-only cards.
+- Removed fixed desktop minimums that could clip the bottom of a premium home
+  screen at common 1366×768 and 1440×900 resolutions.
+
 ## 0.24.0
 
 - Added ten independent premium information-panel designs: Liquid Horizon,

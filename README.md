@@ -9,9 +9,12 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Live Home Assistant state updates.
 - English and Hebrew (including RTL).
 - Responsive desktop, tablet, and mobile layouts.
-- Ten selectable Liquid Glass whole-home compositions in the graphical editor:
-  **Home OS, Bento, Live Focus, Floor Lens, Spatial, Signal, Calm, Room Mosaic,
-  Day Flow, and Modular Pro**. Every composition uses live Area, floor, entity,
+- Twenty selectable whole-home compositions grouped in the graphical editor.
+  **SmplWise Core** preserves Home OS, Bento, Live Focus, Floor Lens, Spatial,
+  Signal, Calm, Room Mosaic, Day Flow, and Modular Pro. **Premium Command** and
+  **Premium Home Experience** add Cinematic Bridge, Orbital Home, Split Prism,
+  Status Lanes, Living Floors, Live Map, Editorial Day, Climate Lens, Command
+  Matrix, and Scene Panorama. Every composition uses live Area, floor, entity,
   alarm, weather, scene, and script data with RTL/LTR-aware placement.
 - Three purpose-built room layouts in the graphical room editor: **C · Floating
   Islands**, **D · Control Deck**, and **E · Cinema Rail**. Each has a dedicated
@@ -149,7 +152,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.24.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.25.0.js
 ```
 
 Resource type: **JavaScript module**.

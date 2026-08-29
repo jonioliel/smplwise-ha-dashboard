@@ -82,7 +82,7 @@ const styles = [
   "lucid_minimal",
 ];
 
-const homePresets = [
+const coreHomePresets = [
   "home_os",
   "bento",
   "live_focus",
@@ -94,6 +94,28 @@ const homePresets = [
   "day_flow",
   "modular_pro",
 ];
+const premiumCommandHomePresets = [
+  "premium_cinematic_bridge",
+  "premium_split_prism",
+  "premium_status_lanes",
+  "premium_command_matrix",
+];
+const premiumExperienceHomePresets = [
+  "premium_orbital_home",
+  "premium_living_floors",
+  "premium_live_map",
+  "premium_editorial_day",
+  "premium_climate_lens",
+  "premium_scene_panorama",
+];
+const homePresetGroups = {
+  core: coreHomePresets,
+  premium_command: premiumCommandHomePresets,
+  premium_experience: premiumExperienceHomePresets,
+};
+const homePresets = Object.values(homePresetGroups).flat();
+assert.deepEqual(Object.fromEntries(Object.entries(homePresetGroups).map(([category, presets]) => [category, presets.length])), { core: 10, premium_command: 4, premium_experience: 6 }, "home compositions must remain split into the intended 10/4/6 groups");
+assert.equal(new Set(homePresets).size, 20, "all twenty home composition slugs must be unique");
 const informationPanelStyles = [
   "liquid_horizon",
   "home_chronograph",
@@ -117,25 +139,49 @@ const homePresetMarkers = {
   room_mosaic: "homeRoomMosaic",
   day_flow: "homeDayFlowCanvas",
   modular_pro: "homeModularCanvas",
+  premium_cinematic_bridge: "homePremiumCinematicBridge",
+  premium_split_prism: "homePremiumSplitPrism",
+  premium_status_lanes: "homePremiumStatusLanes",
+  premium_command_matrix: "homePremiumCommandMatrix",
+  premium_orbital_home: "homePremiumOrbitalHome",
+  premium_living_floors: "homePremiumLivingFloors",
+  premium_live_map: "homePremiumLiveMap",
+  premium_editorial_day: "homePremiumEditorialDay",
+  premium_climate_lens: "homePremiumClimateLens",
+  premium_scene_panorama: "homePremiumScenePanorama",
 };
+const homePresetCategory = Object.fromEntries(Object.entries(homePresetGroups).flatMap(([category, presets]) => presets.map(preset => [preset, category])));
 for (const preset of homePresets) {
   dashboard._boot.config.home_layout = { layout_preset: preset };
   const layout = dashboard._homeLayoutConfig();
   assert.equal(layout.layout_preset, preset, `${preset}: runtime should retain the selected home composition`);
   const html = dashboard._controllyHomeHtml([], 0);
   assert.match(html, new RegExp(`homePreset-${preset}`), `${preset}: runtime wrapper is missing`);
+  assert.match(html, new RegExp(`data-home-category="${homePresetCategory[preset]}"`), `${preset}: runtime category marker is missing`);
   assert.ok(html.includes(homePresetMarkers[preset]), `${preset}: unique composition markup is missing`);
 }
 for (const [legacy, expected] of Object.entries({ control: "home_os", rooms: "room_mosaic", briefing: "calm", split: "signal", scenes: "spatial" })) {
   dashboard._boot.config.home_layout = { layout_preset: legacy };
   assert.equal(dashboard._homeLayoutConfig().layout_preset, expected, `${legacy}: legacy composition should migrate safely`);
 }
+dashboard._boot.config.home_layout = { layout_preset: "not_a_home_layout" };
+assert.equal(dashboard._homeLayoutConfig().layout_preset, "home_os", "an unknown home composition must normalize to home_os");
 dashboard._boot.config.home_layout = { layout_preset: "home_os" };
 dashboard._boot.config.floor_navigation = {};
 assert.equal(dashboard._floorNavigationConfig().show_sidebar_floors, false, "floor tree should be hidden by default");
 const homeEditor = dashboard._homeInfoSettingHtml();
-assert.equal((homeEditor.match(/name="homeLayoutPreset"/g) || []).length, 10, "home editor should expose all ten compositions");
+assert.equal((homeEditor.match(/name="homeLayoutPreset"/g) || []).length, 20, "home editor should expose all twenty compositions");
 for (const preset of homePresets) assert.match(homeEditor, new RegExp(`value="${preset}"`), `${preset}: home editor option is missing`);
+for (const [category, presets] of Object.entries(homePresetGroups)) {
+  const marker = `data-home-layout-category="${category}"`;
+  assert.equal(homeEditor.split(marker).length - 1, 1, `${category}: editor should expose exactly one category group`);
+  const start = homeEditor.indexOf(marker);
+  const nextCategoryStarts = Object.keys(homePresetGroups).filter(key => key !== category).map(key => homeEditor.indexOf(`data-home-layout-category="${key}"`, start + marker.length)).filter(index => index > start);
+  const end = nextCategoryStarts.length ? Math.min(...nextCategoryStarts) : homeEditor.length;
+  const categoryHtml = homeEditor.slice(start, end);
+  for (const preset of presets) assert.match(categoryHtml, new RegExp(`value="${preset}"`), `${preset}: editor option must be grouped under ${category}`);
+  for (const otherPreset of homePresets.filter(preset => !presets.includes(preset))) assert.doesNotMatch(categoryHtml, new RegExp(`value="${otherPreset}"`), `${otherPreset}: editor option leaked into ${category}`);
+}
 
 assert.equal((homeEditor.match(/name="informationPanelStyle"/g) || []).length, 11, "home editor should expose ten premium information-panel styles plus the custom-canvas restore choice");
 assert.equal((homeEditor.match(/name="informationPanelStyle" value="custom_canvas"/g) || []).length, 1, "home editor should expose exactly one custom-canvas restore choice");
@@ -259,6 +305,24 @@ assert.equal(dashboard._boot.config.home_layout.information_panel_style, "solar_
 dashboard.shadowRoot.querySelector = selector => selector === 'input[name="informationPanelStyle"]:checked' ? { value: "custom_canvas" } : null;
 await dashboard._saveHomeInfo();
 assert.equal(dashboard._boot.config.home_layout.information_panel_style, "custom_canvas", "a premium style must be able to restore the saved custom canvas");
+for (const preset of homePresets) {
+  dashboard.shadowRoot.querySelector = selector => {
+    if (selector === 'input[name="homeLayoutPreset"]:checked') return { value: preset };
+    if (selector === 'input[name="informationPanelStyle"]:checked') return { value: "custom_canvas" };
+    return null;
+  };
+  await dashboard._saveHomeInfo();
+  assert.equal(dashboard._boot.config.config_schema_version, 14, `${preset}: saving the home composition must retain schema 14`);
+  assert.equal(dashboard._boot.config.home_layout.layout_preset, preset, `${preset}: the editor selection must survive the save round trip`);
+  assert.equal(dashboard._homeLayoutConfig().layout_preset, preset, `${preset}: the saved composition must normalize back to itself`);
+}
+dashboard.shadowRoot.querySelector = selector => {
+  if (selector === 'input[name="homeLayoutPreset"]:checked') return { value: "not_a_home_layout" };
+  if (selector === 'input[name="informationPanelStyle"]:checked') return { value: "custom_canvas" };
+  return null;
+};
+await dashboard._saveHomeInfo();
+assert.equal(dashboard._boot.config.home_layout.layout_preset, "home_os", "an unknown editor value must normalize to home_os when saved");
 dashboard.shadowRoot.querySelector = () => null;
 await dashboard._saveHomeInfo();
 assert.equal(dashboard._boot.config.home_layout.information_panel_style, "custom_canvas", "saving without a selection must preserve the restored custom canvas");
@@ -351,6 +415,26 @@ const activeClimateRail = dashboard._homeDeviceRailHtml([idleClimate, coolingCli
 assert.match(activeClimateRail, /class="homeDeviceRail activeOnly"/);
 assert.match(activeClimateRail, /data-category-count>1</);
 assert.match(activeClimateRail, /data-entity-card="climate\.bedroom"[^>]*display:none[^>]*hidden/);
+for (const preset of [...premiumCommandHomePresets, ...premiumExperienceHomePresets]) {
+  dashboard._boot.config.home_layout = { layout_preset: preset, mobile_device_layout: "vertical_categories" };
+  const layout = dashboard._homeLayoutConfig();
+  assert.equal(layout.mobile_device_layout, "vertical_categories", `${preset}: the phone layout must retain vertical categories`);
+  const premiumActiveHtml = dashboard._controllyHomeHtml([idleClimate, coolingClimate], 1);
+  assert.match(premiumActiveHtml, new RegExp(`data-home-category="${homePresetCategory[preset]}"`), `${preset}: active-only runtime must retain its design category`);
+  assert.ok(premiumActiveHtml.includes(homePresetMarkers[preset]), `${preset}: active-only runtime must retain its unique composition`);
+  assert.match(premiumActiveHtml, /class="homeDevicesBlock"/, `${preset}: the premium composition must keep its device controls`);
+  assert.match(premiumActiveHtml, /class="homeDeviceRail activeOnly"/, `${preset}: active-only mode must reach the premium device rail`);
+  assert.match(premiumActiveHtml, /data-category-count>1</, `${preset}: active-only category count must exclude an idle climate`);
+  assert.match(premiumActiveHtml, /data-entity-card="climate\.bedroom"[^>]*display:none[^>]*hidden/, `${preset}: idle climate must stay hidden in active-only mode`);
+}
+dashboard._boot.config.home_layout = { layout_preset: "premium_status_lanes", mobile_device_layout: "vertical_categories" };
+const activeStatusViewModel = dashboard._premiumHomeViewModel([offLight, coolingClimate], []);
+const activeStatusLanes = dashboard._premiumStatusLanesHtml(activeStatusViewModel);
+assert.doesNotMatch(activeStatusLanes, /data-entity="light\.table"/, "premium status lanes must not surface an off entity in active-only mode");
+dashboard._boot.config.home_layout = { layout_preset: "premium_command_matrix", mobile_device_layout: "vertical_categories" };
+const activeCommandMatrix = dashboard._premiumCommandMatrixHtml(activeStatusViewModel);
+assert.match(activeCommandMatrix, /data-rail-filter="light"\s+disabled/, "premium command metrics must disable empty active-only categories");
+dashboard._boot.config.home_layout = { layout_preset: "home_os", mobile_device_layout: "vertical_categories" };
 
 const languageFixtures = {
   he: {
@@ -783,6 +867,10 @@ assert.doesNotMatch(harnessSource, /config_schema_version\s*:\s*13\b/, "dashboar
 assert.match(harnessSource, /config_schema_version:14/);
 assert.match(harnessSource, /information_panel_style:harnessInfoStyle/);
 assert.match(harnessSource, /harnessParams\.get\("infoStyle"\)/);
+assert.match(harnessSource, /harnessPresetGroups=\{core:harnessCorePresets,premium_command:harnessPremiumCommandPresets,premium_experience:harnessPremiumExperiencePresets\}/, "dashboard harness must expose all three home-design categories");
+assert.match(harnessSource, /harnessDeviceMode=harnessParams\.get\("deviceMode"\)==="all"\?"all":"active"/, "dashboard harness must default to active-only device controls");
+assert.match(harnessSource, /harnessMobileLayout=harnessParams\.get\("mobileLayout"\)==="rail"\?"horizontal_rail":"vertical_categories"/, "dashboard harness must default phones to vertical device categories");
+for (const preset of homePresets) assert.match(harnessSource, new RegExp(`"${preset}"`), `${preset}: dashboard harness does not recognize the home composition`);
 assert.match(constSource, /"config_schema_version": 14/);
 assert.match(constSource, /"information_panel_style": "liquid_horizon"/);
 assert.match(storeSource, /if previous_version < 14:/);
