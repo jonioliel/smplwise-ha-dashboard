@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.25.2
+
+- Reworked the desktop shell around a strict one-screen viewport contract so
+  the header, selected home composition, device filters, and complete control
+  cards remain visible without page-level vertical scrolling.
+- Rebalanced all twenty home layouts at short desktop heights, including a
+  dedicated compact-card density tier that preserves names, values, state, and
+  quick controls instead of hiding clipped card content.
+- Removed the fixed-height bottlenecks from Cinematic Bridge, Live Map, Split
+  Prism, Living Floors, Command Matrix, and Scene Panorama, while retaining the
+  intended visual composition of each premium layout.
+- Extended the bounded desktop layout to room pages at 901–1100 px, including
+  large cards, and fixed the management screen so it has one intentional inner
+  content scroller rather than nested or clipped vertical scrolling.
+- Verified the complete premium and core home-layout sets at 1440×900,
+  1280×720, and 1024×768, plus room, floor, camera, settings, and natural-flow
+  phone layouts.
+
 ## 0.25.1
 
 - Brought all ten Premium Command and Premium Home Experience compositions up

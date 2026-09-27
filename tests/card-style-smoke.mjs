@@ -798,12 +798,21 @@ assert.deepEqual(mobileHeights, expectedMobileHeights, "phone v3 size presets sh
 assert.ok(fidelityV3Css.includes("@media(max-width:359px){.themeControlly .roomExperience .serviceGrid,.themeControlly.mobileHomeVertical .railCategory{grid-template-columns:1fr!important}"), "phones up to 359px must use one card column");
 assert.ok(fidelityV3Css.includes(".themeControlly .roomExperience .serviceGrid,.themeControlly.mobileHomeVertical .railCategory{grid-template-columns:repeat(2,minmax(0,1fr))!important"), "regular phones must use the intended two-column grid without horizontal card scrolling");
 
-const roomMobileStart = roomV2Css.indexOf("@media(max-width:1100px)");
+const roomMobileStart = roomV2Css.indexOf("@media(max-width:900px)");
 const roomMobileEnd = roomV2Css.indexOf("@media(max-width:430px)", roomMobileStart);
 assert.ok(roomMobileStart >= 0 && roomMobileEnd > roomMobileStart, "room v2 responsive structure should remain bounded and testable before v3 geometry overrides it");
 const roomMobileCss = roomV2Css.slice(roomMobileStart, roomMobileEnd);
 const roomMobileCardRule = cssRule(roomMobileCss, ".themeControlly .roomExperience .entityDesigned", "first");
 assert.ok(roomMobileCardRule.includes("width:100%!important") && roomMobileCardRule.includes("min-width:0!important") && roomMobileCardRule.includes("height:auto!important"), "responsive room cards must release desktop fixed geometry before v3 sizing is applied");
+
+assert.ok(fidelityV3Css.includes("v0.25.2: one-screen desktop contract"), "desktop one-screen contract must remain documented in the stylesheet");
+assert.ok(fidelityV3Css.includes("@media(min-width:901px){\n      .themeControlly{height:100dvh;min-height:100dvh;overflow:hidden}"), "desktop shell must own the viewport without page-level vertical scrolling");
+assert.ok(fidelityV3Css.includes("grid-template-rows:minmax(0,1fr) clamp(252px,42%,330px)"), "premium desktop layouts must reserve a visible device-control band");
+assert.ok(fidelityV3Css.includes("@media(min-width:901px) and (max-height:820px)"), "short desktop viewports need a dedicated density tier");
+assert.ok(fidelityV3Css.includes(".themeControlly .homeDeviceRail .entityDesigned:not(.previewEntity){height:min(100%,156px)!important"), "short desktop device cards must fit their rail without losing quick controls");
+assert.ok(fidelityV3Css.includes(".themeControlly .view-settings .settingsContent{height:100%;min-height:0;max-height:100%;align-self:stretch;overflow-y:auto"), "settings must use one bounded content scroller");
+assert.ok(fidelityV3Css.includes(".themeControlly .homePremiumCinematicBridge{grid-template-rows:minmax(0,1fr) auto}"), "cinematic premium layout must release its legacy fixed row minimums");
+assert.ok(fidelityV3Css.includes(".themeControlly .homePremiumLivingFloors>*{min-height:0}"), "living-floors premium layout must allow its internal floor stack to shrink");
 
 const roomArea = { id: "living", name: "סלון", floor_id: "ground" };
 const roomStates = [
@@ -874,7 +883,7 @@ assert.ok(frontendSource.includes('desktop_overview_min:Math.max(200,Math.min(44
 assert.doesNotMatch(frontendSource, /config_schema_version\s*:\s*14\b/, "frontend save paths must never downgrade schema 15");
 assert.doesNotMatch(harnessSource, /config_schema_version\s*:\s*14\b/, "dashboard harness must exercise schema 15");
 assert.match(harnessSource, /config_schema_version:15/);
-assert.match(harnessSource, /smplwise-ha-dashboard\.js\?v=0\.25\.1/, "dashboard harness must use the v0.25.1 cache token");
+assert.match(harnessSource, /smplwise-ha-dashboard\.js\?v=0\.25\.2/, "dashboard harness must use the v0.25.2 cache token");
 assert.match(harnessSource, /information_panel_style:harnessInfoStyle/);
 assert.match(harnessSource, /harnessParams\.get\("infoStyle"\)/);
 assert.match(harnessSource, /harnessPresetGroups=\{core:harnessCorePresets,premium_command:harnessPremiumCommandPresets,premium_experience:harnessPremiumExperiencePresets\}/, "dashboard harness must expose all three home-design categories");
@@ -885,7 +894,7 @@ assert.match(harnessSource, /harnessShowSidebarFloors=harnessParams\.get\("sideb
 assert.match(harnessSource, /harnessDefaultFloorsCollapsed=harnessParams\.get\("floors"\)==="collapsed"/, "dashboard harness must expand floors unless floors=collapsed is requested");
 assert.match(harnessSource, /default_collapsed:harnessDefaultFloorsCollapsed,show_sidebar_floors:harnessShowSidebarFloors/, "dashboard harness must wire both floor-tree URL overrides into bootstrap config");
 for (const preset of homePresets) assert.match(harnessSource, new RegExp(`"${preset}"`), `${preset}: dashboard harness does not recognize the home composition`);
-assert.match(constSource, /smplwise-ha-dashboard-v0\.25\.1\.js/, "backend panel registration must use the v0.25.1 cache token");
+assert.match(constSource, /smplwise-ha-dashboard-v0\.25\.2\.js/, "backend panel registration must use the v0.25.2 cache token");
 assert.match(constSource, /"config_schema_version": 15/);
 assert.match(constSource, /"layout_preset": "premium_cinematic_bridge"/);
 assert.match(constSource, /"information_panel_style": "liquid_horizon"/);
