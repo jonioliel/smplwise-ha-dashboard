@@ -174,8 +174,26 @@ class DashboardStore:
                     else DEFAULT_CONFIG["home_layout"]["information_panel_style"]
                 )
                 migrated = True
+            if previous_version < 15:
+                # Schema 15 restores the floor/Area tree that schema 13 made
+                # opt-in. That migration persisted ``False`` for every older
+                # installation, so there is no reliable provenance with which
+                # to distinguish an inherited value from a deliberate choice.
+                # Re-enable and expand it once; users can still hide or
+                # collapse the tree explicitly after this migration.
+                self.data["floor_navigation"]["show_sidebar_floors"] = True
+                self.data["floor_navigation"]["default_collapsed"] = False
+
+                # Promote the approved Premium V3 command composition for
+                # installations that still use the former default. Explicitly
+                # selected alternative layouts remain untouched.
+                if self.data["home_layout"].get("layout_preset") == "home_os":
+                    self.data["home_layout"]["layout_preset"] = (
+                        "premium_cinematic_bridge"
+                    )
+                migrated = True
             if migrated:
-                self.data["config_schema_version"] = 14
+                self.data["config_schema_version"] = 15
                 await self._store.async_save(self.data)
 
     async def async_save(self, data: dict[str, Any]) -> None:

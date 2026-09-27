@@ -44,7 +44,7 @@ assert.ok(Dashboard, "dashboard custom element should be registered");
 const dashboard = new Dashboard();
 dashboard._boot = {
   config: {
-    config_schema_version: 14,
+    config_schema_version: 15,
     language: "he",
     theme: "controlly",
     default_view: "home",
@@ -151,6 +151,8 @@ const homePresetMarkers = {
   premium_scene_panorama: "homePremiumScenePanorama",
 };
 const homePresetCategory = Object.fromEntries(Object.entries(homePresetGroups).flatMap(([category, presets]) => presets.map(preset => [preset, category])));
+dashboard._boot.config.home_layout = {};
+assert.equal(dashboard._homeLayoutConfig().layout_preset, "premium_cinematic_bridge", "the default home composition must be the approved Premium V3 command screen");
 for (const preset of homePresets) {
   dashboard._boot.config.home_layout = { layout_preset: preset };
   const layout = dashboard._homeLayoutConfig();
@@ -168,7 +170,12 @@ dashboard._boot.config.home_layout = { layout_preset: "not_a_home_layout" };
 assert.equal(dashboard._homeLayoutConfig().layout_preset, "home_os", "an unknown home composition must normalize to home_os");
 dashboard._boot.config.home_layout = { layout_preset: "home_os" };
 dashboard._boot.config.floor_navigation = {};
-assert.equal(dashboard._floorNavigationConfig().show_sidebar_floors, false, "floor tree should be hidden by default");
+assert.equal(dashboard._floorNavigationConfig().show_sidebar_floors, true, "floor tree should be visible by default");
+assert.equal(dashboard._floorNavigationConfig().default_collapsed, false, "floor tree should be expanded by default");
+dashboard._boot.config.floor_navigation = { show_sidebar_floors: false, default_collapsed: true };
+assert.equal(dashboard._floorNavigationConfig().show_sidebar_floors, false, "an explicit floor-tree visibility override must be retained");
+assert.equal(dashboard._floorNavigationConfig().default_collapsed, true, "an explicit collapsed-floor override must be retained");
+dashboard._boot.config.floor_navigation = {};
 const homeEditor = dashboard._homeInfoSettingHtml();
 assert.equal((homeEditor.match(/name="homeLayoutPreset"/g) || []).length, 20, "home editor should expose all twenty compositions");
 for (const preset of homePresets) assert.match(homeEditor, new RegExp(`value="${preset}"`), `${preset}: home editor option is missing`);
@@ -300,7 +307,7 @@ const originalPersistConfig = dashboard._persistConfig;
 dashboard._persistConfig = async () => {};
 dashboard.shadowRoot.querySelector = selector => selector === 'input[name="informationPanelStyle"]:checked' ? { value: "solar_orbit" } : null;
 await dashboard._saveHomeInfo();
-assert.equal(dashboard._boot.config.config_schema_version, 14, "saving the information panel must retain schema 14");
+assert.equal(dashboard._boot.config.config_schema_version, 15, "saving the information panel must retain schema 15");
 assert.equal(dashboard._boot.config.home_layout.information_panel_style, "solar_orbit", "selected information-panel style must be persisted");
 dashboard.shadowRoot.querySelector = selector => selector === 'input[name="informationPanelStyle"]:checked' ? { value: "custom_canvas" } : null;
 await dashboard._saveHomeInfo();
@@ -312,7 +319,7 @@ for (const preset of homePresets) {
     return null;
   };
   await dashboard._saveHomeInfo();
-  assert.equal(dashboard._boot.config.config_schema_version, 14, `${preset}: saving the home composition must retain schema 14`);
+  assert.equal(dashboard._boot.config.config_schema_version, 15, `${preset}: saving the home composition must retain schema 15`);
   assert.equal(dashboard._boot.config.home_layout.layout_preset, preset, `${preset}: the editor selection must survive the save round trip`);
   assert.equal(dashboard._homeLayoutConfig().layout_preset, preset, `${preset}: the saved composition must normalize back to itself`);
 }
@@ -422,6 +429,8 @@ for (const preset of [...premiumCommandHomePresets, ...premiumExperienceHomePres
   const premiumActiveHtml = dashboard._controllyHomeHtml([idleClimate, coolingClimate], 1);
   assert.match(premiumActiveHtml, new RegExp(`data-home-category="${homePresetCategory[preset]}"`), `${preset}: active-only runtime must retain its design category`);
   assert.ok(premiumActiveHtml.includes(homePresetMarkers[preset]), `${preset}: active-only runtime must retain its unique composition`);
+  assert.doesNotMatch(premiumActiveHtml, /\bpremiumInformationDock\b/, `${preset}: the complete premium composition must not be squeezed by the legacy information dock`);
+  assert.equal((premiumActiveHtml.match(/class="premiumContinuation"/g) || []).length, 1, `${preset}: the complete premium composition must have exactly one device continuation`);
   assert.match(premiumActiveHtml, /class="homeDevicesBlock"/, `${preset}: the premium composition must keep its device controls`);
   assert.match(premiumActiveHtml, /class="homeDeviceRail activeOnly"/, `${preset}: active-only mode must reach the premium device rail`);
   assert.match(premiumActiveHtml, /data-category-count>1</, `${preset}: active-only category count must exclude an idle climate`);
@@ -862,17 +871,26 @@ const constSource = readFileSync(new URL("../custom_components/smplwise_ha_dashb
 const storeSource = readFileSync(new URL("../custom_components/smplwise_ha_dashboard/store.py", import.meta.url), "utf8");
 const harnessSource = readFileSync(new URL("./dashboard-harness.html", import.meta.url), "utf8");
 assert.ok(frontendSource.includes('desktop_overview_min:Math.max(200,Math.min(440') && frontendSource.includes('mobile_overview_min:Math.max(150,Math.min(280'), "editor save clamps must match the visible desktop and mobile height ranges");
-assert.doesNotMatch(frontendSource, /config_schema_version\s*:\s*13\b/, "frontend save paths must never downgrade schema 14");
-assert.doesNotMatch(harnessSource, /config_schema_version\s*:\s*13\b/, "dashboard harness must exercise schema 14");
-assert.match(harnessSource, /config_schema_version:14/);
+assert.doesNotMatch(frontendSource, /config_schema_version\s*:\s*14\b/, "frontend save paths must never downgrade schema 15");
+assert.doesNotMatch(harnessSource, /config_schema_version\s*:\s*14\b/, "dashboard harness must exercise schema 15");
+assert.match(harnessSource, /config_schema_version:15/);
+assert.match(harnessSource, /smplwise-ha-dashboard\.js\?v=0\.25\.1/, "dashboard harness must use the v0.25.1 cache token");
 assert.match(harnessSource, /information_panel_style:harnessInfoStyle/);
 assert.match(harnessSource, /harnessParams\.get\("infoStyle"\)/);
 assert.match(harnessSource, /harnessPresetGroups=\{core:harnessCorePresets,premium_command:harnessPremiumCommandPresets,premium_experience:harnessPremiumExperiencePresets\}/, "dashboard harness must expose all three home-design categories");
+assert.match(harnessSource, /harnessPreset=harnessPresets\.includes\(harnessParams\.get\("preset"\)\)\?harnessParams\.get\("preset"\):"premium_cinematic_bridge"/, "dashboard harness must default to the approved Premium V3 composition");
 assert.match(harnessSource, /harnessDeviceMode=harnessParams\.get\("deviceMode"\)==="all"\?"all":"active"/, "dashboard harness must default to active-only device controls");
 assert.match(harnessSource, /harnessMobileLayout=harnessParams\.get\("mobileLayout"\)==="rail"\?"horizontal_rail":"vertical_categories"/, "dashboard harness must default phones to vertical device categories");
+assert.match(harnessSource, /harnessShowSidebarFloors=harnessParams\.get\("sidebar"\)!=="hide"/, "dashboard harness must show the floor tree unless sidebar=hide is requested");
+assert.match(harnessSource, /harnessDefaultFloorsCollapsed=harnessParams\.get\("floors"\)==="collapsed"/, "dashboard harness must expand floors unless floors=collapsed is requested");
+assert.match(harnessSource, /default_collapsed:harnessDefaultFloorsCollapsed,show_sidebar_floors:harnessShowSidebarFloors/, "dashboard harness must wire both floor-tree URL overrides into bootstrap config");
 for (const preset of homePresets) assert.match(harnessSource, new RegExp(`"${preset}"`), `${preset}: dashboard harness does not recognize the home composition`);
-assert.match(constSource, /"config_schema_version": 14/);
+assert.match(constSource, /smplwise-ha-dashboard-v0\.25\.1\.js/, "backend panel registration must use the v0.25.1 cache token");
+assert.match(constSource, /"config_schema_version": 15/);
+assert.match(constSource, /"layout_preset": "premium_cinematic_bridge"/);
 assert.match(constSource, /"information_panel_style": "liquid_horizon"/);
+assert.match(constSource, /"default_collapsed": False/);
+assert.match(constSource, /"show_sidebar_floors": True/);
 assert.match(storeSource, /if previous_version < 14:/);
 assert.match(storeSource, /"custom_canvas"\s+if customized_canvas/);
 assert.match(storeSource, /"info_widgets"/);
@@ -880,5 +898,11 @@ assert.match(storeSource, /stored_info\.get\("custom_widgets"\)/);
 for (const key of ["info_scale", "info_alignment", "info_columns", "info_order", "info_canvas_direction", "info_canvas_rows", "info_canvas_gap", "clock_scale", "overview_padding"]) {
   assert.match(storeSource, new RegExp(`"${key}"`), `schema 14 migration must preserve a v13 ${key} canvas customization`);
 }
+assert.match(storeSource, /if previous_version < 15:/, "store must migrate legacy installations to schema 15");
+assert.match(storeSource, /\["floor_navigation"\]\["show_sidebar_floors"\] = True/, "schema 15 migration must restore the floor tree");
+assert.match(storeSource, /\["floor_navigation"\]\["default_collapsed"\] = False/, "schema 15 migration must expand the floor tree");
+assert.match(storeSource, /get\("layout_preset"\) == "home_os"/, "schema 15 migration must only promote the former default composition");
+assert.match(storeSource, /\["layout_preset"\] = \(\s*"premium_cinematic_bridge"/s, "schema 15 migration must promote home_os to the approved Premium V3 composition");
+assert.match(storeSource, /\["config_schema_version"\] = 15/, "migrated settings must be persisted as schema 15");
 
 console.log(`card style smoke tests passed: ${exhaustiveCardCases} card variants + ${roomParityCases} room/editor parity cases + ${informationPanelStyles.length * 2} information-panel locale/style cases`);

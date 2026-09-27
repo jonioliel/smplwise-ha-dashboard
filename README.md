@@ -16,6 +16,10 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   Status Lanes, Living Floors, Live Map, Editorial Day, Climate Lens, Command
   Matrix, and Scene Panorama. Every composition uses live Area, floor, entity,
   alarm, weather, scene, and script data with RTL/LTR-aware placement.
+- The ten premium compositions use their complete Premium V3 visual geometry,
+  with **Cinematic Command Bridge** as the default for new installations.
+  Upgrades whose saved composition is still Home OS move to the new default,
+  while every other selected composition is preserved.
 - Three purpose-built room layouts in the graphical room editor: **C · Floating
   Islands**, **D · Control Deck**, and **E · Cinema Rail**. Each has a dedicated
   desktop and phone composition, while room names and data use logical start
@@ -43,17 +47,21 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
   canvas, renamed, positioned, resized, duplicated through multiple entity
   selections, or removed. The canvas automatically becomes a compact two-column
   phone layout while preserving the chosen reading direction.
-- Floor-grouped room navigation with live active/inactive indicators. An
-  administrator can exclude individual entities from the Area activity result.
-  Floors inherit the live status of their child Areas, and each floor is a
-  collapsible group with configurable default and remembered expansion state.
-- A compact single-row floor/Area navigator on the whole-home screen keeps the
-  **Active / All** switch and device controls visible without page scrolling.
-- One continuous horizontal device rail on desktop. On phones the default is a
-  natural vertical page with devices grouped by category and no horizontal
-  device scrolling; the former horizontal phone rail remains selectable. Both
-  modes can switch between **Active** and **All** and keep category navigation
-  synchronized with the visible section.
+- Floor-grouped room navigation with live active/inactive indicators. The
+  desktop floor/Area tree is visible and expanded by default, while management
+  controls can still hide it, start floors collapsed, or remember each user's
+  expansion state. An administrator can exclude individual entities from the
+  Area activity result, and floors inherit the live status of their child Areas.
+- SmplWise Core layouts can use a compact single-row floor/Area navigator on the
+  whole-home screen, keeping their **Active / All** switch and device controls
+  visible without page scrolling.
+- One continuous horizontal device rail on desktop. Premium layouts keep the
+  complete first-screen composition intact and place full device controls below
+  it as a natural continuation. On phones, the premium composition and devices
+  continue vertically, with devices grouped by category and no horizontal
+  device scrolling by default; the former horizontal phone rail remains
+  selectable. Both modes can switch between **Active** and **All** and keep
+  category navigation synchronized with the visible section.
 - Dynamic category sections in every Area. Empty room categories and filters
   are omitted automatically.
 - Capability-aware HVAC controls for target temperature or temperature range,
@@ -101,9 +109,9 @@ It is installed as both a full-screen sidebar panel and a Lovelace custom card.
 - Optional alarm access on the whole-home information surface, including a
   multi-alarm selector in management. Alarm panels remain available even when
   they do not have a Home Assistant Area.
-- Viewport-contained home, Area, camera, and management shells on desktop,
-  tablet, and mobile, with dense content moving to internal horizontal or
-  settings-only scrolling instead of extending the whole page.
+- Viewport-managed home, Area, camera, and management shells on desktop and
+  tablet, with intentional vertical continuation on phones and dense controls
+  moving to focused internal scrolling where appropriate.
 - Administrator controls for text/icon scale, rectangular/square/circular
   device cards, adjustable rectangular card height, category names and order,
   and per-category turn-on/turn-off action labels.
@@ -152,7 +160,7 @@ Add this JavaScript resource if Home Assistant has not loaded the panel module
 in the current browser session:
 
 ```text
-/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.25.0.js
+/smplwise-ha-dashboard/smplwise-ha-dashboard-v0.25.1.js
 ```
 
 Resource type: **JavaScript module**.

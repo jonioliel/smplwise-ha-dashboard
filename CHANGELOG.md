@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.25.1
+
+- Brought all ten Premium Command and Premium Home Experience compositions up
+  to the approved Premium V3 fidelity, with each design occupying one cohesive
+  command stage instead of being squeezed by duplicate generic overview and
+  navigation rails.
+- Made Cinematic Command Bridge the default whole-home composition for new
+  installations. The schema-15 migration promotes installations whose saved
+  composition is still Home OS while preserving every other selected layout.
+- Restored the desktop floor/Area tree as visible and expanded by default. The
+  schema-15 migration re-enables it once for existing installations, while the
+  management controls can still hide the tree, start it collapsed, and remember
+  per-user expansion state.
+- Kept complete device controls below the initial premium composition, including
+  the **Active / All** switch and category navigation, instead of clipping or
+  duplicating them inside the first screen.
+- Continued premium layouts naturally down the page on phones, with the full
+  composition followed by vertically grouped device categories and no default
+  horizontal device scrolling.
+
 ## 0.25.0
 
 - Added ten new premium whole-home compositions alongside the ten existing
